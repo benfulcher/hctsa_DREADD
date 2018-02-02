@@ -39,8 +39,28 @@ for i = 1:2
     end
 end
 
+%-------------------------------------------------------------------------------
+% PLOT IT:
 f = figure('color','w'); hold on
 h_e = histogram(corrs(:,1),'normalization','probability');
 h_s = histogram(corrs(:,2),'normalization','probability');
 legend([h_e,h_s],'Excitatory','SHAM')
 xlabel('Spearman correlation with time')
+
+%-------------------------------------------------------------------------------
+% List top ones:
+topN = min(100,length(Operations));
+[testStat_sort, ifeat] = sort(abs(corrs(:,1)-corrs(:,2)),'descend'); % bigger is better
+doRemove = isnan(testStat_sort) | abs(corrs(:,2))>abs(corrs(:,1));
+testStat_sort = testStat_sort(~doRemove);
+ifeat = ifeat(~doRemove);
+for i = 1:topN
+    fprintf(1,'[%u] %s (%s) -- %4.2f\n',Operations(ifeat(i)).ID, ...
+            Operations(ifeat(i)).Name,Operations(ifeat(i)).Keywords,testStat_sort(i));
+end
+
+%-------------------------------------------------------------------------------
+%
+annotateParams = struct('maxL',900);
+featureID = 3709;
+TS_FeatureSummary(featureID,'HCTSA_SHAM.mat',true,annotateParams)

@@ -17,7 +17,7 @@ normalizedData = load('HCTSA_baselineSub_N.mat');
 IDs_ts1 = TS_getIDs('ts1','HCTSA.mat','ts');
 TS_FilterData('HCTSA.mat',IDs_ts1,[],'HCTSA_ts1.mat');
 TS_normalize(whatNormalization,[0.5,1],'HCTSA_ts1.mat',true);
-TS_classify('HCTSA_ts1_N.mat')
+TS_classify('HCTSA_ts1_N.mat','svm_linear',false,true)
 
 %-------------------------------------------------------------------------------
 % Filter by a given time point
