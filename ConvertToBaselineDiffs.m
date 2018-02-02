@@ -41,6 +41,8 @@ save(newFileName,'TS_DataMat','-append');
 wasKept = ~ismember(timePoint,'ts1');
 TimeSeries = dataRaw.TimeSeries(wasKept);
 save(newFileName,'TimeSeries','-append');
+TS_Quality = dataRaw.TS_Quality(wasKept,:);
+save(newFileName,'TS_Quality','-append');
 fprintf(1,'Saved new HCTSA data, with baseline removed\n');
 
 end

@@ -16,10 +16,10 @@ isExcitatory = false(numTimeSeries,1);
 for i = 1:numTimeSeries
     matchInd = strcmp(TimeSeries(i).Name,DREADDgroups.Timeseries_name);
     theLabel = DREADDgroups.DREADDGroup(matchInd);
-    if strcmp(theLabel,'sham_control')
+    if theLabel=='sham_control'
         TimeSeries(i).Keywords = [TimeSeries(i).Keywords,',SHAM'];
         isExcitatory(i) = false;
-    elseif strcmp(theLabel,'excitatory')
+    elseif theLabel=='excitatory'
         TimeSeries(i).Keywords = [TimeSeries(i).Keywords,',excitatory'];
         isExcitatory(i) = true;
     end
