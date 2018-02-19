@@ -1,15 +1,16 @@
-function LabelWhetherExcitatory(whatFileName)
+function LabelWhetherExcitatory(leftOrRight)
 %-------------------------------------------------------------------------------
 if nargin < 1
-    whatFileName = 'HCTSA.mat';
+    leftOrRight = 'right';
 end
+[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
 %-------------------------------------------------------------------------------
 
 % Import ground-truth data:
 DREADDgroups = ImportLabels();
 
 % Load in the data
-load(whatFileName,'TimeSeries');
+load(rawData,'TimeSeries');
 numTimeSeries = length(TimeSeries);
 
 isExcitatory = false(numTimeSeries,1);
@@ -40,6 +41,6 @@ TimeSeries = cell2struct([squeeze(struct2cell(TimeSeries));isExcitatoryCell],new
 %-------------------------------------------------------------------------------
 % Save to file:
 %-------------------------------------------------------------------------------
-save(whatFileName,'TimeSeries','-append')
+save(rawData,'TimeSeries','-append')
 
 end

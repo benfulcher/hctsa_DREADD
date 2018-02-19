@@ -1,10 +1,13 @@
+leftOrRight = 'left';
+[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
+%-------------------------------------------------------------------------------
 
 % Keep just excitable:
-keepWhat = 'SHAM'; % 'SHAM', 'excitatory'
-IDs_sub = TS_getIDs(keepWhat,'HCTSA.mat','ts');
-filteredFileName = sprintf('HCTSA_%s.mat',keepWhat);
-TS_FilterData('HCTSA.mat',IDs_sub,[],filteredFileName);
-TS_LabelGroups(filteredFileName,{'ts1','ts2','ts3','ts4'})
+keepWhat = 'excitatory'; % 'SHAM', 'excitatory'
+IDs_sub = TS_getIDs(keepWhat,rawData,'ts');
+filteredFileName = sprintf('%s_%s.mat',rawData(1:end-4),keepWhat);
+TS_FilterData(rawData,IDs_sub,[],filteredFileName);
+TS_LabelGroups(filteredFileName,{'ts1','ts2','ts3','ts4'});
 filteredFileNameN = TS_normalize(whatNormalization,[0.5,1],filteredFileName,true);
 % TS_LabelGroups({'SHAM','DREDD','rsfMRI'},'raw');
 
@@ -22,15 +25,20 @@ TS_classify(filteredFileNameN)
 %-------------------------------------------------------------------------------
 % Do a regression for ts number:
 files = cell(2,1);
-files{1} = 'HCTSA_excitatory.mat';
-files{2} = 'HCTSA_SHAM.mat';
+files{1} = fullfile(prePath,'HCTSA_excitatory.mat');
+files{2} = fullfile(prePath,'HCTSA_SHAM.mat');
 
 corrs = zeros(numFeatures,2);
 for i = 1:2
     load(files{i},'TS_DataMat','TimeSeries','Operations');
     % Get the ts number out of each time series:
     keywordSplit = regexp({TimeSeries.Keywords},',','split');
-    timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
+    switch leftOrRight
+    case 'left'
+        timePoint = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
+    case 'right'
+        timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
+    end
     theTime = cellfun(@(x)str2num(x(3)),timePoint)';
     % Now regress each feature onto theTime
     numFeatures = length(Operations);
@@ -42,8 +50,8 @@ end
 %-------------------------------------------------------------------------------
 % PLOT IT:
 f = figure('color','w'); hold on
-h_e = histogram(corrs(:,1),'normalization','probability');
-h_s = histogram(corrs(:,2),'normalization','probability');
+h_e = histogram(corrs(:,1),'normalization','pdf');
+h_s = histogram(corrs(:,2),'normalization','pdf');
 legend([h_e,h_s],'Excitatory','SHAM')
 xlabel('Spearman correlation with time')
 

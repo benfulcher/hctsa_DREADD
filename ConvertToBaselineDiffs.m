@@ -1,18 +1,43 @@
-function ConvertToBaselineDiffs()
+function ConvertToBaselineDiffs(leftOrRight)
 
-dataRaw = load('HCTSA.mat');
+if nargin < 1
+    leftOrRight = 'right';
+end
 
+%-------------------------------------------------------------------------------
+% Set file path
+[prePath,rawData] = GiveMeLeftRightInfo(leftOrRight);
+dataRaw = load(rawData);
+
+%-------------------------------------------------------------------------------
 % 1) Get unique by mouse ID
 tsKeywords = {dataRaw.TimeSeries.Keywords}';
 keywordSplit = regexp(tsKeywords,',','split');
-expType = cellfun(@(x)x{1},keywordSplit,'UniformOutput',false);
-mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
-timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
-expTypeMouseID = cellfun(@(x)horzcat(x{1:2}),keywordSplit,'UniformOutput',false);
+switch leftOrRight
+case 'left'
+    expTypeMouseID = cell(length(dataRaw.TimeSeries),1);
+    for i = 1:length(dataRaw.TimeSeries)
+        theName = dataRaw.TimeSeries(i).Name;
+        % 20170905_SHAM
+        if strcmp(theName(10:13),'SHAM')
+            expTypeMouseID{i} = theName(1:20);
+        else
+            expTypeMouseID{i} = theName(1:26);
+        end
+    end
+
+    timePoint = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
+case 'right'
+    expType = cellfun(@(x)x{1},keywordSplit,'UniformOutput',false);
+    mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
+    timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
+    expTypeMouseID = cellfun(@(x)horzcat(x{1:2}),keywordSplit,'UniformOutput',false);
+end
 uniqueMiceExp = unique(expTypeMouseID);
 numMice = length(uniqueMiceExp);
 fprintf(1,'%u mice\n',numMice);
 
+%-------------------------------------------------------------------------------
 % 2) For each mouse ID, get the {ts1,ts2,ts3,ts4}
 % 3) Do the subtraction from the raw feature matrix
 dataMatSubtracted = zeros(numMice*3,size(dataRaw.TS_DataMat,2));
@@ -33,8 +58,8 @@ end
 %-------------------------------------------------------------------------------
 % 4) Save back to a new HCTSA file:
 % (Copy to a new version)
-newFileName = 'HCTSA_baselineSub.mat';
-system(sprintf('cp HCTSA.mat %s',newFileName));
+newFileName = fullfile(prePath,'HCTSA_baselineSub.mat');
+system(sprintf('cp %s %s',rawData,newFileName));
 TS_DataMat = dataMatSubtracted;
 save(newFileName,'TS_DataMat','-append');
 % Now we remove baseline data:
@@ -43,6 +68,6 @@ TimeSeries = dataRaw.TimeSeries(wasKept);
 save(newFileName,'TimeSeries','-append');
 TS_Quality = dataRaw.TS_Quality(wasKept,:);
 save(newFileName,'TS_Quality','-append');
-fprintf(1,'Saved new HCTSA data, with baseline removed\n');
+fprintf(1,'Saved new HCTSA data, with baseline removed to %s\n',newFileName);
 
 end

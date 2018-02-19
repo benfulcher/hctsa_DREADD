@@ -1,16 +1,24 @@
 %-------------------------------------------------------------------------------
-% FOREPLAY:
+% PARAMETERS:
+leftOrRight = 'left';
 whatNormalization = 'scaledRobustSigmoid'; % 'zscore', 'scaledRobustSigmoid'
+
+%-------------------------------------------------------------------------------
+[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
+
+%-------------------------------------------------------------------------------
+% FOREPLAY:
 % Label all time series:
 % TS_LabelGroups({'SHAM','DREDD','rsfMRI'},'raw');
-TS_LabelGroups({'SHAM','excitatory'},'raw');
+TS_LabelGroups(rawData,{'SHAM','excitatory'});
 % Normalize the data, filtering out features with any special values:
-TS_normalize(whatNormalization,[0.5,1],'HCTSA_baselineSub.mat',true);
+normDataBL = TS_normalize(whatNormalization,[0.5,1],rawDataBL,true);
+
+%-------------------------------------------------------------------------------
 % Load data in as a structure:
-% unnormalizedData = load('HCTSA.mat');
-unnormalizedData = load('HCTSA_baselineSub.mat');
+unnormalizedData = load(rawDataBL);
 % Load normalized data in a structure:
-normalizedData = load('HCTSA_baselineSub_N.mat');
+normalizedData = load(normDataBL);
 
 %-------------------------------------------------------------------------------
 % Classification across all time points:
@@ -24,11 +32,11 @@ timeSeriesLength = 600; % length of time-series segments to annotate
 annotateParams = struct('n',numAnnotate,'textAnnotation','none',...
                         'userInput',userSelects,'maxL',timeSeriesLength);
 TS_plot_pca(normalizedData,true,'',annotateParams)
-TS_classify(normalizedData,'svm_linear',false,true)
+
 numFeatures = 40; % number of features to include in the pairwise correlation plot
 numFeaturesDistr = 32; % number of features to show class distributions for
 whatStatistic = 'fast_linear'; % fast linear classification rate statistic
-TS_TopFeatures('HCTSA_baselineSub.mat',whatStatistic,'numFeatures',numFeatures,...
+TS_TopFeatures(rawDataBL,whatStatistic,'numFeatures',numFeatures,...
             'numFeaturesDistr',numFeaturesDistr,...
             'whatPlots',{'histogram','distributions','cluster'},...
             'numNulls',10);
@@ -45,9 +53,9 @@ for i = 1:length(tsCell)
     theTS = tsCell{i};
     if doFiltering
         % Make new HCTSA files by filtering
-        IDs_tsX = TS_getIDs(theTS,'HCTSA.mat','ts');
+        IDs_tsX = TS_getIDs(theTS,rawData,'ts');
         filteredFileName = sprintf('HCTSA_%s.mat',theTS);
-        TS_FilterData('HCTSA.mat',IDs_tsX,[],filteredFileName);
+        TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
         normalizedFileName = TS_normalize(whatNormalization,[0.5,1],filteredFileName,true);
     end
     fprintf(1,'\n\n TIME POINT %s \n\n\n',theTS);
