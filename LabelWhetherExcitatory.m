@@ -15,7 +15,12 @@ numTimeSeries = length(TimeSeries);
 
 isExcitatory = false(numTimeSeries,1);
 for i = 1:numTimeSeries
-    matchInd = strcmp(TimeSeries(i).Name,DREADDgroups.Timeseries_name);
+    if strcmp(leftOrRight,'control')
+        first28Names = cellfun(@(x)x(1:28),DREADDgroups.Timeseries_name,'UniformOutput',false);
+        matchInd = strcmp(TimeSeries(i).Name(1:28),first28Names);
+    else
+        matchInd = strcmp(TimeSeries(i).Name,DREADDgroups.Timeseries_name);
+    end
     theLabel = DREADDgroups.DREADDGroup(matchInd);
     if theLabel=='sham_control'
         TimeSeries(i).Keywords = [TimeSeries(i).Keywords,',SHAM'];
@@ -23,6 +28,8 @@ for i = 1:numTimeSeries
     elseif theLabel=='excitatory'
         TimeSeries(i).Keywords = [TimeSeries(i).Keywords,',excitatory'];
         isExcitatory(i) = true;
+    else
+        error('Could not match on keywords');
     end
 end
 

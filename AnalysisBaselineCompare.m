@@ -10,9 +10,11 @@ whatNormalization = 'scaledRobustSigmoid'; % 'zscore', 'scaledRobustSigmoid'
 % FOREPLAY:
 % Label all time series:
 % TS_LabelGroups({'SHAM','DREDD','rsfMRI'},'raw');
-TS_LabelGroups(rawData,{'SHAM','excitatory'});
+TS_LabelGroups(rawDataBL,{'SHAM','excitatory'});
 % Normalize the data, filtering out features with any special values:
-normDataBL = TS_normalize(whatNormalization,[0.5,1],rawDataBL,true);
+normDataBL = TS_normalize(whatNormalization,[0.5,1],rawDataBL,false);
+% Cluster:
+TS_cluster('euclidean','average','corr_fast','average',[true,true],normDataBL);
 
 %-------------------------------------------------------------------------------
 % Load data in as a structure:
@@ -20,9 +22,12 @@ unnormalizedData = load(rawDataBL);
 % Load normalized data in a structure:
 normalizedData = load(normDataBL);
 
+TS_plot_DataMatrix(normalizedData,'colorGroups',true)
+
 %-------------------------------------------------------------------------------
 % Classification across all time points:
-TS_classify(normalizedData,'svm_linear',false,true)
+TS_classify(normalizedData,'svm_linear','doPCs',true,'numNulls',10,...
+                    'numFolds',10,'numRepeats',10,'seedReset','none');
 
 %-------------------------------------------------------------------------------
 %% Generate a low-dimensional principal components representation of the dataset:
@@ -56,10 +61,10 @@ for i = 1:length(tsCell)
         IDs_tsX = TS_getIDs(theTS,rawData,'ts');
         filteredFileName = sprintf('HCTSA_%s.mat',theTS);
         TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
-        normalizedFileName = TS_normalize(whatNormalization,[0.5,1],filteredFileName,true);
+        normalizedData = TS_normalize(whatNormalization,[0.5,1],filteredFileName,true);
     end
     fprintf(1,'\n\n TIME POINT %s \n\n\n',theTS);
-    TS_classify(normalizedFileName,'svm_linear',false,true)
+    TS_classify(normalizedData,'svm_linear',false,true)
 end
 
 %-------------------------------------------------------------------------------
@@ -78,8 +83,6 @@ for i = 1:length(tsCell_BL)
     end
     TS_classify(normalizedFileName,'svm_linear',false,true)
 end
-
-
 
 %-------------------------------------------------------------------------------
 numFeatures = 40; % number of features to include in the pairwise correlation plot

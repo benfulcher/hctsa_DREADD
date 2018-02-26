@@ -27,7 +27,7 @@ case 'left'
     end
 
     timePoint = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
-case 'right'
+case {'right','control'}
     expType = cellfun(@(x)x{1},keywordSplit,'UniformOutput',false);
     mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
     timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
