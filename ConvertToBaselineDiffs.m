@@ -11,28 +11,7 @@ dataRaw = load(rawData);
 
 %-------------------------------------------------------------------------------
 % 1) Get unique by mouse ID
-tsKeywords = {dataRaw.TimeSeries.Keywords}';
-keywordSplit = regexp(tsKeywords,',','split');
-switch leftOrRight
-case 'left'
-    expTypeMouseID = cell(length(dataRaw.TimeSeries),1);
-    for i = 1:length(dataRaw.TimeSeries)
-        theName = dataRaw.TimeSeries(i).Name;
-        % 20170905_SHAM
-        if strcmp(theName(10:13),'SHAM')
-            expTypeMouseID{i} = theName(1:20);
-        else
-            expTypeMouseID{i} = theName(1:26);
-        end
-    end
-
-    timePoint = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
-case {'right','control'}
-    expType = cellfun(@(x)x{1},keywordSplit,'UniformOutput',false);
-    mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
-    timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
-    expTypeMouseID = cellfun(@(x)horzcat(x{1:2}),keywordSplit,'UniformOutput',false);
-end
+expTypeMouseID = ConvertToMouseExpID(TimeSeries,leftOrRight);
 uniqueMiceExp = unique(expTypeMouseID);
 numMice = length(uniqueMiceExp);
 fprintf(1,'%u mice\n',numMice);
