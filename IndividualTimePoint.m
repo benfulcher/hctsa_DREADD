@@ -15,7 +15,7 @@ numTimePoints = length(tsCell);
 
 %-------------------------------------------------------------------------------
 % Load basic info on data:
-[prePath,rawData,rawDataBL,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
+[prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
 % [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
 
 %-------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-function [prePath,rawData,rawDataBL,normDataBL] = Foreplay(leftOrRight,whatNormalization,labelByMouse,doCluster)
+function [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,whatNormalization,labelByMouse,doCluster)
 % Do the pre-processing ready to go
 
 if nargin < 1
@@ -13,6 +13,8 @@ end
 if nargin < 4
     doCluster = true;
 end
+classVarFilter = true;
+filterOpt = [0.5,1];
 
 %-------------------------------------------------------------------------------
 [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
@@ -22,8 +24,9 @@ end
 LabelDREADDSGroups(labelByMouse,leftOrRight,rawDataBL);
 
 %-------------------------------------------------------------------------------
-% Normalize the data, filtering out features with any special values:
-normDataBL = TS_normalize(whatNormalization,[0.5,1],rawDataBL,false);
+% Normalize the full data & baseline-subtracted data, filtering out features with any special values:
+normData = TS_normalize(whatNormalization,filterOpt,rawData,classVarFilter);
+normDataBL = TS_normalize(whatNormalization,filterOpt,rawDataBL,classVarFilter);
 
 %-------------------------------------------------------------------------------
 % Cluster:

@@ -10,7 +10,7 @@ if useOldResults
     [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
     normDataBL = [rawDataBL(1:end-4),'_N.mat'];
 else
-    [prePath,rawData,rawDataBL,normDataBL] = Foreplay(leftOrRight,whatNormalization,labelByMouse,doCluster);
+    [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,whatNormalization,labelByMouse,doCluster);
 end
 
 %-------------------------------------------------------------------------------

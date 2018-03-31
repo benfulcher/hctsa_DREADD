@@ -21,7 +21,7 @@ stdAcc = zeros(numRegions,2); % real, null
 pVals = zeros(numRegions,1);
 for k = 1:numRegions
     if preProcessAgain
-        [prePath,rawData,rawDataBL,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
+        [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
     else
         [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(regionLabels{k});
     end
