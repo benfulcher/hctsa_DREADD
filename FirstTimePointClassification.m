@@ -1,16 +1,17 @@
-
 %-------------------------------------------------------------------------------
 % 1. Classification at each region at POST1 (relative to baseline)
 %-------------------------------------------------------------------------------
 
 regionLabels = {'right','left','control'};
-numRegions = 3;
+numRegions = length(regionLabels);
 preProcessAgain = false;
 theTS = 'ts2-BL'; % first time point (subtracting baseline)
+whatFeatures = 'reduced'; % 'reduced','all'
+theClassifier = 'svm_linear';
 
 numFolds = 10;
 numRepeats = 100;
-numNulls = 1000;
+numNulls = 100;
 
 %-------------------------------------------------------------------------------
 foldLosses = cell(numRegions,1);
@@ -24,9 +25,15 @@ for k = 1:numRegions
     else
         [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(regionLabels{k});
     end
-    normalizedData = fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTS));
+    loadedData = load(fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTS)));
+    if strcmp(whatFeatures,'reduced')
+        fprintf(1,'Reduced feature set!!\n');
+        normalizedData = FilterReducedSet(loadedData);
+    else
+        normalizedData = loadedData;
+    end
     fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',regionLabels{k},theTS);
-    [foldLosses{k},nullStat{k}] = TS_classify(normalizedData,'svm_linear','numPCs',0,'numNulls',numNulls,...
+    [foldLosses{k},nullStat{k}] = TS_classify(normalizedData,theClassifier,'numPCs',0,'numNulls',numNulls,...
                         'numFolds',numFolds,'numRepeats',numRepeats,'seedReset','none');
     meanAcc(k,1) = mean(foldLosses{k});
     stdAcc(k,1) = std(foldLosses{k});
