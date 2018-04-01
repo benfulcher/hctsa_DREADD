@@ -1,4 +1,4 @@
-function LabelDREADDSGroups(byMouse,leftOrRight,whatData)
+function groupNames = LabelDREADDSGroups(byMouse,leftOrRight,whatData)
 
 if byMouse
     % Label by unique mouse/ID pairs:

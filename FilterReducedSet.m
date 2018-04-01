@@ -1,7 +1,7 @@
 function filteredData = FilterReducedSet(loadedData)
 
 % load(fullfile('Data','clusterInfo_HCTSA_rightCTX_4000_0.20.mat'),'autoChosenIDs');
-load(fullfile('Data','clusterInfo_rightCTX_02.mat'),'reducedIDs');
+load(fullfile('Data','clusterInfo_Spearman_rightCTX_02.mat'),'reducedIDs');
 
 filteredData = loadedData;
 keepMe = ismember([loadedData.Operations.ID],reducedIDs);
