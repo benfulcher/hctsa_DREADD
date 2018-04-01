@@ -45,7 +45,6 @@ for k = 1:numRegions
     pVals(k) = mean(mean(foldLosses{k}) < nullStat{k});
 end
 
-
 % P-values relative to null:
 for k = 1:numRegions
     fprintf(1,'%s (%.2f%%)-- %.3g\n',regionLabels{k},meanAcc(k,1),pVals(k));

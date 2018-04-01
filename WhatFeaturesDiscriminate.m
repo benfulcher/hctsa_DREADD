@@ -47,7 +47,7 @@ fprintf(1,'Saved results to %s\n',fileName);
 % hemispheres?:
 f = figure('color','w');
 plot(testStat{1},testStat{2},'.k');
-[r,p] = corr(testStat{1},testStat{2});
+[r,p] = corr(testStat{1},testStat{2},'rows','pairwise');
 xlabel('Right hemisphere')
 ylabel('Left hemisphere')
 title(sprintf('r = %.2f',r))
