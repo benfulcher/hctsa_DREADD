@@ -63,7 +63,7 @@ TS_FeatureSummary(featureID,filteredData,true,annotateParams)
 %===============================================================================
 %-------------------------------------------------------------------------------
 % Right hemisphere analysis:
-[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo('left');
+[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo('right');
 loadedData = load((fullfile(prePath,sprintf('HCTSA_%s.mat',theTS))));
 if strcmp(whatFeatures,'reduced')
     fprintf(1,'Reduced feature set!!\n');
@@ -93,7 +93,7 @@ end
 
 %-------------------------------------------------------------------------------
 % (needs filteredData)
-features = [2198,19,3722,923];
+features = [16,2198,3718];
 numFeatures = length(features);
 means = zeros(numFeatures,2);
 stds = zeros(numFeatures,2);
@@ -106,7 +106,7 @@ for i = 1:numFeatures
     stds(i,1) = std(f1);
     means(i,2) = mean(f2);
     stds(i,2) = std(f2);
-    ax = subplot(2,2,i); hold on
+    ax = subplot(1,3,i); hold on
     ax.YLabel.Interpreter = 'none';
     plot(means(i,:),'ok','LineWidth',2);
     plot(means(i,:)+stds(i,:),'sk');
