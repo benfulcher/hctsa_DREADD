@@ -1,7 +1,7 @@
-function [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,plusPVCre)
+function [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis)
 
 if nargin < 2
-    plusPVCre = false;
+    whatAnalysis = 'excitatorySHAM';
 end
 
 % Parent directory
@@ -15,12 +15,15 @@ switch leftOrRight
 end
 
 % File in parent directory:
-if plusPVCre
-    rawData = fullfile(prePath,'HCTSA_all.mat');
-    rawDataBL = fullfile(prePath,'HCTSA_all_baselineSub.mat');
-else
+switch whatAnalysis
+case 'Excitatory_SHAM'
+    fprintf(1,'Excitatory-SHAM!\n');
     rawData = fullfile(prePath,'HCTSA.mat');
     rawDataBL = fullfile(prePath,'HCTSA_baselineSub.mat');
+case 'PVCre_SHAM'
+    fprintf(1,'PVCre-SHAM!\n');
+    rawData = fullfile(prePath,'HCTSA_PVCre_SHAM.mat');
+    rawDataBL = fullfile(prePath,'HCTSA_PVCre_SHAM_baselineSub.mat');
 end
 
 end

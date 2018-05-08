@@ -1,7 +1,8 @@
-function expTypeMouseID = ConvertToMouseExpID(TimeSeries,leftOrRight)
+function [expTypeMouseID,timePoint] = ConvertToMouseExpID(TimeSeries,leftOrRight)
 % Given TimeSeries, returns mouse IDs that combine mouse and experiment
 
 tsKeywords = {TimeSeries.Keywords}';
+numTS = length(tsKeywords);
 keywordSplit = regexp(tsKeywords,',','split');
 
 switch leftOrRight
@@ -17,12 +18,35 @@ case 'left'
         end
     end
     timePoint = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
+    if size(timePoint,1) > size(timePoint,2)
+        timePoint = timePoint';
+    end
 case {'right','control'}
-    keyboard
-    expType = cellfun(@(x)x{1},keywordSplit,'UniformOutput',false);
-    mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
-    timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
-    expTypeMouseID = cellfun(@(x)horzcat(x{1:2}),keywordSplit,'UniformOutput',false);
+    numKWs = cellfun(@length,keywordSplit);
+    isPVCre = cellfun(@(x)strcmp(x{3},'PVCre'),keywordSplit);
+    if any(isPVCre)
+        expType = cell(length(tsKeywords),1);
+        mouseID = cell(length(tsKeywords),1);
+        timePoint = cell(length(tsKeywords),1);
+        for k = 1:numTS
+            if isPVCre(k)
+                expTypeMouseID{k} = horzcat(keywordSplit{k}{3},keywordSplit{k}{1});
+                timePoint{k} = keywordSplit{k}{2};
+            else
+                expTypeMouseID{k} = horzcat(keywordSplit{k}{1},keywordSplit{k}{2});
+                timePoint{k} = keywordSplit{k}{3};
+            end
+        end
+    else
+        expType = cellfun(@(x)x{1},keywordSplit,'UniformOutput',false);
+        mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
+        timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
+        expTypeMouseID = cellfun(@(x)horzcat(x{1:2}),keywordSplit,'UniformOutput',false);
+    end
+    if size(timePoint,1) > size(timePoint,2)
+        timePoint = timePoint';
+    end
 end
+
 
 end

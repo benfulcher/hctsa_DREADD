@@ -1,29 +1,28 @@
-function ConvertToBaselineDiffs(leftOrRight,plusPVCre,threeOrFour)
+function ConvertToBaselineDiffs(leftOrRight,whatAnalysis)
 
 if nargin < 1
     leftOrRight = 'right';
 end
 if nargin < 2
-    plusPVCre = false;
-    fprintf(1,'Not including PVCre data\n');
+    whatAnalysis = 'Excitatory_SHAM';
+    fprintf(1,'Analyzing excitatory-sham data\n');
 end
-if nargin < 3
-    if plusPVCre
-        threeOrFour = 3;
-        % PVCre data don't have the fourth time point in them...
-    else
-        threeOrFour = 4;
-    end
+switch whatAnalysis
+case 'Excitatory_SHAM'
+    threeOrFour = 4;
+case 'PVCre_SHAM'
+    % PVCre data don't have the fourth time point in them...
+    threeOrFour = 3;
 end
 
 %-------------------------------------------------------------------------------
 % Set file path
-[prePath,rawData] = GiveMeLeftRightInfo(leftOrRight,plusPVCre);
+[prePath,rawData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
 dataRaw = load(rawData);
 
 %-------------------------------------------------------------------------------
 % 1) Get unique by mouse ID
-expTypeMouseID = ConvertToMouseExpID(dataRaw.TimeSeries,leftOrRight);
+[expTypeMouseID,timePoint] = ConvertToMouseExpID(dataRaw.TimeSeries,leftOrRight);
 uniqueMiceExp = unique(expTypeMouseID);
 numMice = length(uniqueMiceExp);
 fprintf(1,'%u mice\n',numMice);
@@ -34,7 +33,7 @@ fprintf(1,'%u mice\n',numMice);
 dataMatSubtracted = zeros(numMice*(threeOrFour-1),size(dataRaw.TS_DataMat,2));
 for i = 1:numMice
     index = strcmp(expTypeMouseID,uniqueMiceExp{i});
-    if sum(index)~=4
+    if sum(index)~=threeOrFour
         error('Error matching %s',uniqueMiceExp{i});
     end
     isBaseline = index & strcmp(timePoint,'ts1');
@@ -51,11 +50,7 @@ end
 %-------------------------------------------------------------------------------
 % 4) Save back to a new HCTSA file:
 % (Copy to a new version)
-if plusPVCre
-    newFileName = fullfile(prePath,'HCTSA_all_baselineSub.mat');
-else
-    newFileName = fullfile(prePath,'HCTSA_baselineSub.mat');
-end
+newFileName = sprintf('%s_baselineSub.mat',rawData(1:end-4));
 system(sprintf('cp %s %s',rawData,newFileName));
 TS_DataMat = dataMatSubtracted;
 save(newFileName,'TS_DataMat','-append');
