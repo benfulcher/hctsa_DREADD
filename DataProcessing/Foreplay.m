@@ -1,16 +1,19 @@
-function [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,whatNormalization,labelByMouse,doCluster)
+function [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,plusPVCre,whatNormalization,labelByMouse,doCluster)
 % Do the pre-processing ready to go
 
 if nargin < 1
     leftOrRight = 'control';
 end
 if nargin < 2
-    whatNormalization = 'scaledRobustSigmoid'; % 'zscore', 'scaledRobustSigmoid'
+    plusPVCre = false;
 end
 if nargin < 3
-    labelByMouse = false;
+    whatNormalization = 'scaledRobustSigmoid'; % 'zscore', 'scaledRobustSigmoid'
 end
 if nargin < 4
+    labelByMouse = false;
+end
+if nargin < 5
     doCluster = true;
 end
 classVarFilter = true;
