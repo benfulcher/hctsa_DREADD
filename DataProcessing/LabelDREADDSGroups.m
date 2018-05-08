@@ -1,4 +1,9 @@
-function groupNames = LabelDREADDSGroups(byMouse,leftOrRight,whatData)
+function groupNames = LabelDREADDSGroups(byMouse,leftOrRight,whatData,whatAnalysis)
+
+if nargin < 4
+    whatAnalysis = 'Excitatory_SHAM';
+end
+%-------------------------------------------------------------------------------
 
 if byMouse
     % Label by unique mouse/ID pairs:
@@ -19,12 +24,13 @@ if byMouse
     TimeSeries = cell2struct([squeeze(struct2cell(TimeSeries));theGroupsCell],newFieldNames);
     save(whatData,'TimeSeries','groupNames','-append')
     fprintf(1,'Saved mouse/experiment ID back to %s\n',whatData);
-    % mouseLabels = {'mouse70','mouse72','mouse73','mouse75','mouse124','mouse125','mouse90',''};
-    % TS_LabelGroups(whatData,{'SHAM','excitatory'});
 else
-    TS_LabelGroups(whatData,{'SHAM','excitatory'});
+    switch whatAnalysis
+    case 'Excitatory_SHAM'
+        TS_LabelGroups(whatData,{'excitatory','SHAM'});
+    case 'PVCre_SHAM'
+        TS_LabelGroups(whatData,{'PVCre','SHAM'});
+    end
 end
-% Three groups:
-% TS_LabelGroups({'SHAM','DREDD','rsfMRI'},'raw');
 
 end

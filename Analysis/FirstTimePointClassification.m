@@ -5,6 +5,7 @@ function FirstTimePointClassification()
 
 regionLabels = {'right','left','control'};
 numRegions = length(regionLabels);
+whatAnalysis = 'PVCre_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM'
 
 % Pre-processing:
 preProcessAgain = true;
@@ -29,14 +30,14 @@ for k = 1:numRegions
     if preProcessAgain
         % Make new HCTSA files from scratch, by filtering
         labelByMouse = false;
-        [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(regionLabels{k},normalizeDataHow,labelByMouse,false);
+        [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(regionLabels{k},whatAnalysis,normalizeDataHow,labelByMouse,false);
         IDs_tsX = TS_getIDs(theTS(1:3),rawDataBL,'ts');
         filteredFileName = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
         TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
         dataFile = TS_normalize(normalizeDataHow,[0.5,1],filteredFileName,true);
     else
         % Data already processed (e.g., from IndividualTimePoint)
-        [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(regionLabels{k});
+        [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(regionLabels{k},whatAnalysis);
         dataFile = fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTS));
     end
     fprintf(1,'Loading data from %s\n',dataFile);
@@ -85,6 +86,6 @@ ax.XTickLabel = regionLabels;
 ylabel('Balanced classification accuracy (%)');
 xlabel('Brain region');
 xlim([0.9,3.1])
-title(sprintf('%u-fold, %u repeats, %u nulls',numFolds,numRepeats,numNulls))
+title(sprintf('%s: %u-fold, %u repeats, %u nulls',whatAnalysis,numFolds,numRepeats,numNulls))
 
 end
