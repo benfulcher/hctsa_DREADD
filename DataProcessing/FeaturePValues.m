@@ -1,4 +1,4 @@
-function FDR_qvals = FeaturePValues(hctsaData)
+function [pVals,FDR_qvals] = FeaturePValues(hctsaData)
 
 %-------------------------------------------------------------------------------
 % Compute all ranksum p-values:
@@ -17,9 +17,12 @@ FDR_qvals = mafdr(pVals,'BHFDR','true');
 isSig = (FDR_qvals < 0.05);
 sigInd = find(isSig);
 fprintf(1,'%u significant at 5%% FDR\n',length(sigInd));
+[~,ix] = sort(FDR_qvals,'ascend');
 for i = 1:length(sigInd)
-    fprintf(1,'[%u]%s: q = %.3g\n',hctsaData.Operations(sigInd(i)).ID,...
-                hctsaData.Operations(sigInd(i)).Name,FDR_qvals(sigInd(i)));
+    ind = ix(i);
+    fprintf(1,'[%u]%s(%s): q = %.3g\n',hctsaData.Operations(ind).ID,...
+            hctsaData.Operations(ind).Name,hctsaData.Operations(ind).Keywords,...
+            FDR_qvals(ind));
 end
 
 end

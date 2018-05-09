@@ -48,7 +48,7 @@ title(sprintf('%s: r = %.2f, p = %.2g',whatAnalysis,r,p))
 %===============================================================================
 % What about for PVCre_SHAM and Excitatory_SHAM?:
 %===============================================================================
-rightOrLeft = 'control';
+rightOrLeft = 'right';
 whatAnalysis = {'Excitatory_SHAM','PVCre_SHAM'};
 ifeat = cell(2,1);
 testStat = cell(2,1);
@@ -68,13 +68,26 @@ for k = 1:2
                 'numNulls',0);
 end
 
+topWhat = 50;
+[~,ix] = sort(testStat{1},'descend'); ix(isnan(testStat{1}(ix))) = [];
+[~,iy] = sort(testStat{2},'descend'); iy(isnan(testStat{1}(iy))) = [];
+subset = union(ix(1:topWhat),iy(1:topWhat));
+isInBoth = intersect(ix(1:topWhat),iy(1:topWhat));
+fprintf(1,'%u in common\n',length(isInBoth));
+for i = 1:length(isInBoth)
+    fprintf(1,'[%u]%s (%u,%u)\n',filteredData.Operations(isInBoth(i)).ID,...
+                filteredData.Operations(isInBoth(i)).Name,...
+                find(ix==isInBoth(i)),find(iy==isInBoth(i)));
+end
+
 %-------------------------------------------------------------------------------
 f = figure('color','w');
-plot(testStat{1},testStat{2},'.k');
-[r,p] = corr(testStat{1},testStat{2},'rows','pairwise');
+plot(testStat{1}(subset),testStat{2}(subset),'.k');
+[r,p] = corr(testStat{1}(subset),testStat{2}(subset),'rows','pairwise','Type','Spearman');
+axis('square')
 xlabel(whatAnalysis{1},'interpreter','none')
 ylabel(whatAnalysis{2},'interpreter','none')
-title(sprintf('%s: r = %.2f, p = %.2g',rightOrLeft,r,p))
+title(sprintf('%s: r-Spearman = %.2f, p = %.2g',rightOrLeft,r,p))
 
 
 %-------------------------------------------------------------------------------
@@ -88,9 +101,10 @@ title(sprintf('%s: r = %.2f, p = %.2g',rightOrLeft,r,p))
 
 % %-------------------------------------------------------------------------------
 % % Investigate particular individual features in some more detail
-% annotateParams = struct('maxL',900);
-% % RIGHT HEMISPHERE:
-% % featureID = 2198; % 19,3722,1132,1137,2198,1253,923,1827 % RIGHT HEMISPHERE
+annotateParams = struct('maxL',900);
+% RIGHT HEMISPHERE:
+% featureID = 2198; % 19,3722,1132,1137,2198,1253,923,1827 % RIGHT HEMISPHERE
 % featureID = filteredData.Operations(ifeat{1}(3)).ID;
-% % featureID = 9; % LEFT HEMISPHERE
-% TS_FeatureSummary(featureID,filteredData,true,annotateParams);
+featureID = 902;
+% featureID = 9; % LEFT HEMISPHERE
+TS_FeatureSummary(featureID,filteredData,true,annotateParams);
