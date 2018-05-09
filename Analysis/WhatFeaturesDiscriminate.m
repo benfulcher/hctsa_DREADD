@@ -7,20 +7,22 @@
 clear all
 %===============================================================================
 % Set parameters:
-rightOrLeft = {'right','left','control'};
+whatAnalysis = 'PVCre_SHAM';
 numFeatures = 80; % number of features to include in the pairwise correlation plot
 numFeaturesDistr = 16*3; % number of features to show class distributions for
 numNulls = 0;
 whatFeatures = 'reduced'; %'all','reduced'
 whatStatistic = 'ustat'; % fast linear classification rate statistic
 %===============================================================================
+rightOrLeft = {'right','left','control'};
+%-------------------------------------------------------------------------------
 
 ifeat = cell(3,1);
 testStat = cell(3,1);
 testStat_rand = cell(3,1);
 theTS = 'ts2-BL'; % first time point (subtracting baseline)
 for k = 1:3
-    [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(rightOrLeft{k});
+    [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(rightOrLeft{k},whatAnalysis);
     loadedData = load((fullfile(prePath,sprintf('HCTSA_%s.mat',theTS))));
     if strcmp(whatFeatures,'reduced')
         fprintf(1,'Reduced feature set!!\n');

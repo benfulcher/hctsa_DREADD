@@ -3,3 +3,5 @@
 *_rs_fMRI*.txt
 HCTSA*.mat
 *.nii
+*.mat
+*.txt

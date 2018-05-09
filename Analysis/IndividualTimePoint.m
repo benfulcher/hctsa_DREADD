@@ -1,8 +1,15 @@
-
+%-------------------------------------------------------------------------------
+% ^^^Requires running SplitByTimePoint first^^^
+%-------------------------------------------------------------------------------
 leftOrRight = 'control';
 labelByMouse = false;
 doBL = true; % use baseline subtraction
 normalizeDataHow = 'scaledRobustSigmoid';
+whatAnalysis = 'PVCre_SHAM'; % 'PVCre_SHAM','Excitatory_SHAM'
+% Classification options:
+numNulls = 50;
+numRepeats = 50;
+numFolds = 10;
 
 %-------------------------------------------------------------------------------
 % Names of time points:
@@ -11,36 +18,23 @@ if doBL
 else
     tsCell = {'ts1','ts2','ts3','ts4'};
 end
+if strcmp(whatAnalysis,'PVCre_SHAM')
+    tsCell = tsCell(1:end-2);
+end
 numTimePoints = length(tsCell);
 
 %-------------------------------------------------------------------------------
 % Load basic info on data:
-[prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
-% [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
+% [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
+[prePath,rawData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
 
 %-------------------------------------------------------------------------------
 % Filter by time point for a SINGLE brain location
 %-------------------------------------------------------------------------------
-doFiltering = false; % (only need to do this once)
-numNulls = 50;
-numRepeats = 50;
-numFolds = 10;
 meanAcc = zeros(numTimePoints,2);
 for i = 1:numTimePoints
     theTS = tsCell{i};
-    if doFiltering
-        % Make new HCTSA files by filtering
-        if doBL
-            IDs_tsX = TS_getIDs(theTS(1:3),rawDataBL,'ts');
-        else
-            IDs_tsX = TS_getIDs(theTS,rawData,'ts');
-        end
-        filteredFileName = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
-        TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
-        normalizedData = TS_normalize(whatNormalization,[0.5,1],filteredFileName,true);
-    else
-        normalizedData = fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTS));
-    end
+    normalizedData = sprintf('%s_%s_N.mat',rawData(1:end-4),theTS);
     fprintf(1,'\n\n TIME POINT %s \n\n\n',theTS);
     [foldLosses,nullStat] = TS_classify(normalizedData,'svm_linear','numPCs',0,...
                     'numNulls',numNulls,'numFolds',numFolds,'numRepeats',numRepeats,'seedReset','none');
@@ -52,7 +46,7 @@ end
 f = figure('color','w'); ax = gca; hold('on')
 plot(meanAcc(:,1),'o-k');
 plot(meanAcc(:,2),'x:b');
-ax.XTick = 1:3;
+ax.XTick = 1:numTimePoints;
 ax.XTickLabel = tsCell;
 
 %===============================================================================
