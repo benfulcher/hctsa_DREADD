@@ -24,6 +24,16 @@ case 'PVCre_SHAM'
     fprintf(1,'PVCre-SHAM!\n');
     rawData = fullfile(prePath,'HCTSA_PVCre_SHAM.mat');
     rawDataBL = fullfile(prePath,'HCTSA_PVCre_SHAM_baselineSub.mat');
+case 'Excitatory_PVCre'
+    fprintf(1,'Excitatory-PVCre!\n');
+    rawData = fullfile(prePath,'HCTSA_Exc_PVCre.mat');
+    rawDataBL = fullfile(prePath,'HCTSA_Exc_PVCre_baselineSub.mat');
+case 'Excitatory_PVCre_SHAM'
+    fprintf(1,'Excitatory-PVCre-SHAM!\n');
+    rawData = fullfile(prePath,'HCTSA_Exc_PVCre_SHAM.mat');
+    rawDataBL = fullfile(prePath,'HCTSA_Exc_PVCre_SHAM_baselineSub.mat');
+otherwise
+    error('Unknown analysis: %s',whatAnalysis);
 end
 
 end

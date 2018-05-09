@@ -10,7 +10,7 @@ end
 switch whatAnalysis
 case 'Excitatory_SHAM'
     threeOrFour = 4;
-case 'PVCre_SHAM'
+case {'PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM'}
     % PVCre data don't have the fourth time point in them...
     threeOrFour = 3;
 end
@@ -35,6 +35,9 @@ for i = 1:numMice
     index = strcmp(expTypeMouseID,uniqueMiceExp{i});
     if sum(index)~=threeOrFour
         error('Error matching %s',uniqueMiceExp{i});
+    end
+    if size(index,1)~=size(timePoint,1)
+        timePoint = timePoint';
     end
     isBaseline = index & strcmp(timePoint,'ts1');
     baseLine = dataRaw.TS_DataMat(isBaseline,:);

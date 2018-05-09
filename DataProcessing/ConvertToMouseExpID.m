@@ -18,9 +18,6 @@ case 'left'
         end
     end
     timePoint = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
-    if size(timePoint,1) > size(timePoint,2)
-        timePoint = timePoint';
-    end
 case {'right','control'}
     numKWs = cellfun(@length,keywordSplit);
     isPVCre = cellfun(@(x)strcmp(x{3},'PVCre'),keywordSplit);
@@ -42,9 +39,6 @@ case {'right','control'}
         mouseID = cellfun(@(x)x{2},keywordSplit,'UniformOutput',false);
         timePoint = cellfun(@(x)x{3},keywordSplit,'UniformOutput',false);
         expTypeMouseID = cellfun(@(x)horzcat(x{1:2}),keywordSplit,'UniformOutput',false);
-    end
-    if size(timePoint,1) > size(timePoint,2)
-        timePoint = timePoint';
     end
 end
 

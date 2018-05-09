@@ -30,6 +30,12 @@ else
         TS_LabelGroups(whatData,{'excitatory','SHAM'});
     case 'PVCre_SHAM'
         TS_LabelGroups(whatData,{'PVCre','SHAM'});
+    case 'Excitatory_PVCre'
+        TS_LabelGroups(whatData,{'excitatory','PVCre'});
+    case 'Excitatory_PVCre_SHAM'
+        TS_LabelGroups(whatData,{'excitatory','PVCre','SHAM'});
+    otherwise
+        error('Unknown analysis: %s',whatAnalysis);
     end
 end
 

@@ -1,11 +1,13 @@
-function FirstTimePointClassification()
+function FirstTimePointClassification(whatAnalysis)
 %-------------------------------------------------------------------------------
 % 1. Classification at each region at POST1 (relative to baseline)
 %-------------------------------------------------------------------------------
+if nargin < 1
+    whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM', 'Excitatory_PVCre'
+end
 
 regionLabels = {'right','left','control'};
 numRegions = length(regionLabels);
-whatAnalysis = 'PVCre_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM'
 
 % Pre-processing:
 preProcessAgain = true;
@@ -18,7 +20,7 @@ theClassifier = 'svm_linear';
 % Cross-validation machine learning parameters:
 numFolds = 10;
 numRepeats = 100;
-numNulls = 5000;
+numNulls = 500;
 
 %-------------------------------------------------------------------------------
 foldLosses = cell(numRegions,1);
@@ -86,6 +88,7 @@ ax.XTickLabel = regionLabels;
 ylabel('Balanced classification accuracy (%)');
 xlabel('Brain region');
 xlim([0.9,3.1])
-title(sprintf('%s: %u-fold, %u repeats, %u nulls',whatAnalysis,numFolds,numRepeats,numNulls))
+title(sprintf('%s: %u-fold, %u repeats, %u nulls',whatAnalysis,numFolds,numRepeats,numNulls),...
+                                'interpreter','none')
 
 end
