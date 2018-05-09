@@ -5,7 +5,7 @@ leftOrRight = 'right';
 labelByMouse = false;
 doBL = true; % use baseline subtraction
 normalizeDataHow = 'scaledRobustSigmoid';
-whatAnalysis = 'PVCre_SHAM'; % 'PVCre_SHAM','Excitatory_SHAM'
+whatAnalysis = 'Excitatory_PVCre_SHAM'; % 'PVCre_SHAM','Excitatory_SHAM'
 % Classification options:
 numNulls = 50;
 numRepeats = 50;

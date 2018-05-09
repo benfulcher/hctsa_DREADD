@@ -1,5 +1,5 @@
 leftOrRight = 'right';
-whatAnalysis = 'PVCre_SHAM'; % 'Excitatory_SHAM', 'PVCre_SHAM'
+whatAnalysis = 'Excitatory_PVCre_SHAM'; % 'Excitatory_SHAM', 'PVCre_SHAM'
 
 %===============================================================================
 %-------------------------------------------------------------------------------

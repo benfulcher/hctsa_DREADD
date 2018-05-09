@@ -7,19 +7,20 @@
 clear all
 %===============================================================================
 % Set parameters:
-whatAnalysis = 'PVCre_SHAM';
+whatAnalysis = 'Excitatory_PVCre_SHAM';
 numFeatures = 80; % number of features to include in the pairwise correlation plot
 numFeaturesDistr = 16*3; % number of features to show class distributions for
 numNulls = 0;
 whatFeatures = 'reduced'; %'all','reduced'
 whatStatistic = 'ustat'; % fast linear classification rate statistic
 %===============================================================================
-rightOrLeft = {'right','left','control'};
-ifeat = cell(3,1);
-testStat = cell(3,1);
-testStat_rand = cell(3,1);
+rightOrLeft = {'right'}; % {'right','left','control'};
+numRegions = length(rightOrLeft);
+ifeat = cell(numRegions,1);
+testStat = cell(numRegions,1);
+testStat_rand = cell(numRegions,1);
 theTS = 'ts2-BL'; % first time point (subtracting baseline)
-for k = 1:3
+for k = 1:numRegions
     [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(rightOrLeft{k},whatAnalysis);
     loadedData = load(sprintf('%s_%s.mat',rawData(1:end-4),theTS));
     if strcmp(whatFeatures,'reduced')
