@@ -1,7 +1,7 @@
 %-------------------------------------------------------------------------------
 % ^^^Requires running SplitByTimePoint first^^^
 %-------------------------------------------------------------------------------
-leftOrRight = 'control';
+leftOrRight = 'right';
 labelByMouse = false;
 doBL = true; % use baseline subtraction
 normalizeDataHow = 'scaledRobustSigmoid';
@@ -19,7 +19,7 @@ else
     tsCell = {'ts1','ts2','ts3','ts4'};
 end
 if strcmp(whatAnalysis,'PVCre_SHAM')
-    tsCell = tsCell(1:end-2);
+    tsCell = tsCell(1:end-1);
 end
 numTimePoints = length(tsCell);
 
@@ -48,6 +48,7 @@ plot(meanAcc(:,1),'o-k');
 plot(meanAcc(:,2),'x:b');
 ax.XTick = 1:numTimePoints;
 ax.XTickLabel = tsCell;
+title(sprintf('%s-%s',whatAnalysis,leftOrRight),'interpreter','none')
 
 %===============================================================================
 return

@@ -1,7 +1,7 @@
 function [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis)
 
 if nargin < 2
-    whatAnalysis = 'excitatorySHAM';
+    whatAnalysis = 'Excitatory_SHAM';
 end
 
 % Parent directory

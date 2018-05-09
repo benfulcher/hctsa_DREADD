@@ -23,9 +23,9 @@ testStat_rand = cell(3,1);
 theTS = 'ts2-BL'; % first time point (subtracting baseline)
 for k = 1:3
     [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(rightOrLeft{k},whatAnalysis);
-    loadedData = load((fullfile(prePath,sprintf('HCTSA_%s.mat',theTS))));
+    loadedData = load(sprintf('%s_%s.mat',rawData(1:end-4),theTS));
     if strcmp(whatFeatures,'reduced')
-        fprintf(1,'Reduced feature set!!\n');
+        fprintf(1,'Using a reduced feature set!!!!\n');
         filteredData = FilterReducedSet(loadedData);
     else
         filteredData = loadedData;
@@ -39,7 +39,8 @@ end
 
 %-------------------------------------------------------------------------------
 % Save out:
-fileName = sprintf('whatFeaturesDiscriminate_%unulls.mat',numNulls)
+fileName = sprintf('whatFeaturesDiscriminate_%s_%s_%unulls.mat',whatAnalysis,...
+                            whatStatistic,numNulls)
 save(fileName);
 fprintf(1,'Saved results to %s\n',fileName);
 
@@ -65,8 +66,10 @@ TS_FeatureSummary(featureID,filteredData,true,annotateParams)
 %===============================================================================
 %-------------------------------------------------------------------------------
 % Right hemisphere analysis:
-[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo('right');
-loadedData = load((fullfile(prePath,sprintf('HCTSA_%s.mat',theTS))));
+%-------------------------------------------------------------------------------
+%===============================================================================
+[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo('right',whatAnalysis);
+loadedData = load(sprintf('%s_%s.mat',rawData(1:end-4),theTS));
 if strcmp(whatFeatures,'reduced')
     fprintf(1,'Reduced feature set!!\n');
     filteredData = FilterReducedSet(loadedData);
@@ -90,12 +93,14 @@ FDR_qvals = mafdr(pVals,'BHFDR','true');
 isSig = (FDR_qvals < 0.05);
 sigInd = find(isSig);
 for i = 1:length(sigInd)
-    fprintf(1,'[%u]%s: %.3g\n',i,filteredData.Operations(sigInd(i)).Name,FDR_qvals(sigInd(i)));
+    fprintf(1,'[%u]%s: q = %.3g\n',filteredData.Operations(sigInd(i)).ID,...
+                filteredData.Operations(sigInd(i)).Name,FDR_qvals(sigInd(i)));
 end
 
 %-------------------------------------------------------------------------------
 % (needs filteredData)
-features = [16,2198,3718];
+% features = [16,2198,3718];
+features = [26,2705,3750];
 numFeatures = length(features);
 means = zeros(numFeatures,2);
 stds = zeros(numFeatures,2);
