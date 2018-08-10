@@ -1,5 +1,6 @@
 function [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,whatAnalysis,whatNormalization,labelByMouse,doCluster)
 % Do the pre-processing ready to go
+%-------------------------------------------------------------------------------
 
 if nargin < 1
     leftOrRight = 'control';

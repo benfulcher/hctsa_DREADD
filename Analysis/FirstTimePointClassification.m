@@ -1,11 +1,16 @@
-function FirstTimePointClassification(whatAnalysis)
-%-------------------------------------------------------------------------------
-% 1. Classification at each region at POST1 (relative to baseline)
+function FirstTimePointClassification(whatAnalysis,whatFeatures,numNulls)
+% Classification at each region at POST1 (relative to baseline)
 %-------------------------------------------------------------------------------
 if nargin < 1
     whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM', 'Excitatory_PVCre'
 end
-
+if nargin < 2
+    whatFeatures = 'reduced'; % 'reduced','all'
+end
+if nargin < 3
+    numNulls = 500;
+end
+%-------------------------------------------------------------------------------
 regionLabels = {'right','left','control'};
 numRegions = length(regionLabels);
 
@@ -14,13 +19,11 @@ preProcessAgain = true;
 normalizeDataHow = 'scaledRobustSigmoid';
 
 theTS = 'ts2-BL'; % first time point (subtracting baseline)
-whatFeatures = 'reduced'; % 'reduced','all'
 theClassifier = 'svm_linear';
 
 % Cross-validation machine learning parameters:
 numFolds = 10;
 numRepeats = 100;
-numNulls = 500;
 
 %-------------------------------------------------------------------------------
 foldLosses = cell(numRegions,1);
@@ -29,30 +32,23 @@ meanAcc = zeros(numRegions,2); % real, null
 stdAcc = zeros(numRegions,2); % real, null
 pVals = zeros(numRegions,1);
 for k = 1:numRegions
-    if preProcessAgain
-        % Make new HCTSA files from scratch, by filtering
-        labelByMouse = false;
-        [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(regionLabels{k},whatAnalysis,normalizeDataHow,labelByMouse,false);
-        IDs_tsX = TS_getIDs(theTS(1:3),rawDataBL,'ts');
-        filteredFileName = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
-        TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
-        dataFile = TS_normalize(normalizeDataHow,[0.5,1],filteredFileName,true);
-    else
-        % Data already processed (e.g., from IndividualTimePoint)
-        [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(regionLabels{k},whatAnalysis);
-        dataFile = fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTS));
-    end
-    fprintf(1,'Loading data from %s\n',dataFile);
-    loadedData = load(dataFile);
+    theRegion = regionLabels{k};
+    % Use normalized data at the default time point:
+    [~,~,~,~,dataBLTimeNorm] = GiveMeLeftRightInfo(theRegion,whatAnalysis);
+
+    fprintf(1,'Loading data from %s\n',dataBLTimeNorm);
+    loadedData = load(dataBLTimeNorm);
     if strcmp(whatFeatures,'reduced')
         fprintf(1,'Restricting to a reduced feature set!!\n');
         normalizedData = FilterReducedSet(loadedData);
     else
         normalizedData = loadedData;
     end
-    fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',regionLabels{k},theTS);
-    [foldLosses{k},nullStat{k}] = TS_classify(normalizedData,theClassifier,'numPCs',0,'numNulls',numNulls,...
-                        'numFolds',numFolds,'numRepeats',numRepeats,'seedReset','none');
+    fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',theRegion,theTS);
+    [foldLosses{k},nullStat{k}] = TS_classify(normalizedData,theClassifier,...
+                        'numPCs',0,'numNulls',numNulls,...
+                        'numFolds',numFolds,'numRepeats',numRepeats,...
+                        'seedReset','none');
     meanAcc(k,1) = mean(foldLosses{k});
     stdAcc(k,1) = std(foldLosses{k});
     meanAcc(k,2) = mean(nullStat{k});
@@ -66,7 +62,7 @@ end
 %-------------------------------------------------------------------------------
 % P-values relative to null:
 for k = 1:numRegions
-    fprintf(1,'%s (%.2f%%)-- %.3g\n',regionLabels{k},meanAcc(k,1),pVals(k));
+    fprintf(1,'%s (%.2f%%)-- %.3g\n',theRegion,meanAcc(k,1),pVals(k));
 end
 
 %-------------------------------------------------------------------------------

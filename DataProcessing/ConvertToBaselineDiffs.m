@@ -7,6 +7,8 @@ if nargin < 2
     whatAnalysis = 'Excitatory_SHAM';
     fprintf(1,'Analyzing excitatory-sham data\n');
 end
+%-------------------------------------------------------------------------------
+
 switch whatAnalysis
 case 'Excitatory_SHAM'
     threeOrFour = 4;
@@ -51,8 +53,7 @@ for i = 1:numMice
 end
 
 %-------------------------------------------------------------------------------
-% 4) Save back to a new HCTSA file:
-% (Copy to a new version)
+% 4) Save back to a new HCTSA file (copy to a new version):
 newFileName = sprintf('%s_baselineSub.mat',rawData(1:end-4));
 system(sprintf('cp %s %s',rawData,newFileName));
 TS_DataMat = dataMatSubtracted;

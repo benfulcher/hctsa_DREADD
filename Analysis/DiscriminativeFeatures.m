@@ -1,15 +1,42 @@
-leftOrRight = 'right';
-whatAnalysis = 'Excitatory_PVCre_SHAM'; % 'Excitatory_SHAM', 'PVCre_SHAM'
+function DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures)
+% What features are most discriminative between conditions in a given area
+%-------------------------------------------------------------------------------
+
+if nargin < 1
+    whatAnalysis = 'Excitatory_SHAM'; %'Excitatory_PVCre_SHAM', 'PVCre_SHAM'
+end
+if nargin < 2
+    leftOrRight = 'right';
+end
+if nargin < 3
+    whatFeatures = 'reduced';
+end
+
+% Do this at the first time point (subtracting baseline)
+theTS = 'ts2-BL';
+processDataAgain = true;
 
 %===============================================================================
-%-------------------------------------------------------------------------------
-% Right hemisphere analysis:
-%-------------------------------------------------------------------------------
-%===============================================================================
+% Prepare data:
 [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
-loadedData = load(sprintf('%s_%s.mat',rawData(1:end-4),theTS));
+LabelDREADDSGroups(false,leftOrRight,rawData,whatAnalysis);
+LabelDREADDSGroups(false,leftOrRight,rawDataBL,whatAnalysis);
+
+
+if processDataAgain
+    IDs_tsX = TS_getIDs(theTS(1:3),rawDataBL,'ts');
+    filteredFileName = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
+    TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
+    dataFile = filteredFileName;
+    % dataFile = TS_normalize(normalizeDataHow,[0.5,1],filteredFileName,true);
+else
+    [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
+    dataFile = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
+end
+fprintf(1,'Loading data from %s\n',dataFile);
+loadedData = load(dataFile);
 if strcmp(whatFeatures,'reduced')
-    fprintf(1,'Reduced feature set!!\n');
+    fprintf(1,'Restricting to a reduced feature set!!\n');
     filteredData = FilterReducedSet(loadedData);
 else
     filteredData = loadedData;
