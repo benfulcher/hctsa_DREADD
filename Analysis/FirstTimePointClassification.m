@@ -1,4 +1,4 @@
-function FirstTimePointClassification(whatAnalysis,whatFeatures,numNulls)
+function FirstTimePointClassification(whatAnalysis,whatFeatures,theTimePoint,numNulls)
 % Classification at each region at POST1 (relative to baseline)
 %-------------------------------------------------------------------------------
 if nargin < 1
@@ -8,17 +8,18 @@ if nargin < 2
     whatFeatures = 'reduced'; % 'reduced','all'
 end
 if nargin < 3
+    % First time point (subtracting baseline):
+    theTimePoint = 'ts2-BL';
+end
+if nargin < 4
     numNulls = 500;
 end
+
 %-------------------------------------------------------------------------------
 regionLabels = {'right','left','control'};
 numRegions = length(regionLabels);
 
 % Pre-processing:
-preProcessAgain = true;
-normalizeDataHow = 'scaledRobustSigmoid';
-
-theTS = 'ts2-BL'; % first time point (subtracting baseline)
 theClassifier = 'svm_linear';
 
 % Cross-validation machine learning parameters:
@@ -33,13 +34,12 @@ stdAcc = zeros(numRegions,2); % real, null
 pVals = zeros(numRegions,1);
 for k = 1:numRegions
     theRegion = regionLabels{k};
-    % Use normalized data at the default time point:
-    [~,~,~,~,dataBLTimeNorm] = GiveMeLeftRightInfo(theRegion,whatAnalysis);
+    % Use baseline-removed, normalized data at the default time point:
+    [~,~,~,~,dataTimeNorm] = GiveMeLeftRightInfo(theRegion,whatAnalysis,theTS);
 
-    fprintf(1,'Loading data from %s\n',dataBLTimeNorm);
-    loadedData = load(dataBLTimeNorm);
+    fprintf(1,'Loading data from %s\n',dataTimeNorm);
+    loadedData = load(dataTimeNorm);
     if strcmp(whatFeatures,'reduced')
-        fprintf(1,'Restricting to a reduced feature set!!\n');
         normalizedData = FilterReducedSet(loadedData);
     else
         normalizedData = loadedData;
@@ -60,7 +60,7 @@ for k = 1:numRegions
 end
 
 %-------------------------------------------------------------------------------
-% P-values relative to null:
+% Permutation test p-values relative to null:
 for k = 1:numRegions
     fprintf(1,'%s (%.2f%%)-- %.3g\n',theRegion,meanAcc(k,1),pVals(k));
 end

@@ -1,19 +1,32 @@
+function IndividualTimePoint(leftOrRight,whatAnalysis,doBaseline)
+% Compare classifiability across time points for a given brain area
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+% Check inputs, set defaults:
+if nargin < 1
+    leftOrRight = 'right';
+end
+if nargin < 2
+    whatAnalysis = 'Excitatory_SHAM'; % 'PVCre_SHAM','Excitatory_PVCre_SHAM'
+end
+if nargin < 3
+    doBaseline = true; % (subtract features at baseline)
+end
+
 %-------------------------------------------------------------------------------
 % ^^^Requires running SplitByTimePoint first^^^
 %-------------------------------------------------------------------------------
-leftOrRight = 'right';
 labelByMouse = false;
-doBL = true; % use baseline subtraction
-normalizeDataHow = 'scaledRobustSigmoid';
-whatAnalysis = 'Excitatory_PVCre_SHAM'; % 'PVCre_SHAM','Excitatory_SHAM'
-% Classification options:
+
+% Classification settings:
 numNulls = 50;
 numRepeats = 50;
 numFolds = 10;
 
 %-------------------------------------------------------------------------------
 % Names of time points:
-if doBL
+if doBaseline
     tsCell = {'ts2-BL','ts3-BL','ts4-BL'};
 else
     tsCell = {'ts1','ts2','ts3','ts4'};
@@ -24,20 +37,17 @@ end
 numTimePoints = length(tsCell);
 
 %-------------------------------------------------------------------------------
-% Load basic info on data:
-% [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,normalizeDataHow,labelByMouse,false);
-[prePath,rawData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
-
-%-------------------------------------------------------------------------------
-% Filter by time point for a SINGLE brain location
+% Filter by time point for a given brain location
 %-------------------------------------------------------------------------------
 meanAcc = zeros(numTimePoints,2);
 for i = 1:numTimePoints
-    theTS = tsCell{i};
-    normalizedData = sprintf('%s_%s_N.mat',rawData(1:end-4),theTS);
-    fprintf(1,'\n\n TIME POINT %s \n\n\n',theTS);
+    theTimePoint = tsCell{i};
+    fprintf(1,'\n\n TIME POINT %s \n\n\n',theTimePoint);
+
+    [~,~,~,~,normalizedData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
     [foldLosses,nullStat] = TS_classify(normalizedData,'svm_linear','numPCs',0,...
-                    'numNulls',numNulls,'numFolds',numFolds,'numRepeats',numRepeats,'seedReset','none');
+                    'numNulls',numNulls,'numFolds',numFolds,...
+                    'numRepeats',numRepeats,'seedReset','none');
     meanAcc(i,1) = mean(foldLosses);
     meanAcc(i,2) = mean(nullStat);
 end
@@ -65,9 +75,9 @@ stdAcc = zeros(3,numTimePoints,2);
 for k = 1:3
     [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(regionLabels{k});
     for i = 1:length(tsCell)
-        theTS = tsCell{i};
-        normalizedData = fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTS));
-        fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',regionLabels{k},theTS);
+        theTimePoint = tsCell{i};
+        normalizedData = fullfile(prePath,sprintf('HCTSA_%s_N.mat',theTimePoint));
+        fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',regionLabels{k},theTimePoint);
         [foldLosses,nullStat] = TS_classify(normalizedData,'svm_linear','numPCs',0,'numNulls',numNulls,...
                             'numFolds',numFolds,'numRepeats',numRepeats,'seedReset','none');
         meanAcc(k,i,1) = mean(foldLosses);
@@ -102,14 +112,14 @@ return
 tsCell_BL = {'ts2','ts3','ts4'};
 doFiltering = false; % (only needs to be done once)
 for i = 1:length(tsCell_BL)
-    theTS_BL = tsCell_BL{i};
+    theTimePoint_BL = tsCell_BL{i};
     if doFiltering
-        IDs_tsX = TS_getIDs(theTS_BL,'HCTSA_baselineSub.mat','ts');
-        filteredFileName = sprintf('HCTSA_baselineSub_%s.mat',theTS_BL);
+        IDs_tsX = TS_getIDs(theTimePoint_BL,'HCTSA_baselineSub.mat','ts');
+        filteredFileName = sprintf('HCTSA_baselineSub_%s.mat',theTimePoint_BL);
         TS_FilterData('HCTSA_baselineSub.mat',IDs_tsX,[],filteredFileName);
         normalizedFileName = TS_normalize(whatNormalization,[0.5,1],filteredFileName,true);
     else
-        normalizedFileName = sprintf('HCTSA_baselineSub_%s_N.mat',theTS_BL);
+        normalizedFileName = sprintf('HCTSA_baselineSub_%s_N.mat',theTimePoint_BL);
     end
     TS_classify(normalizedFileName,'svm_linear',false,true)
 end

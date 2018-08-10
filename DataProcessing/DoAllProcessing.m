@@ -1,5 +1,7 @@
 function DoAllProcessing()
 
+whatNormalization = 'scaledRobustSigmoid';
+
 whatRegions = {'left','right','control'};
 numRegs = length(whatRegions);
 whatAnalysis = {'Excitatory_SHAM','PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM'};
@@ -28,8 +30,8 @@ end
 % Split by time point:
 for j = 1:numAnalyses
     theAnalysis = whatAnalysis{j};
-    SplitByTimePoint(theAnalysis,false)
-    SplitByTimePoint(theAnalysis,true)
+    SplitByTimePoint(theAnalysis,false,whatNormalization)
+    SplitByTimePoint(theAnalysis,true,whatNormalization)
 end
 
 end

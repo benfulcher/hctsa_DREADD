@@ -1,4 +1,4 @@
-function SplitByTimePoint(whatAnalysis,doBL)
+function SplitByTimePoint(whatAnalysis,doBL,whatNormalization)
 % Splits the required HCTSA files by individual time point
 %-------------------------------------------------------------------------------
 
@@ -9,7 +9,9 @@ end
 if nargin < 2
     doBL = true;
 end
-whatNormalization = 'scaledRobustSigmoid';
+if nargin < 3
+    whatNormalization = 'scaledRobustSigmoid';
+end
 labelByMouse = false;
 
 if doBL

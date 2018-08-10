@@ -1,4 +1,4 @@
-function DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures)
+function DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures,theTimePoint)
 % What features are most discriminative between conditions in a given area
 %-------------------------------------------------------------------------------
 
@@ -11,32 +11,18 @@ end
 if nargin < 3
     whatFeatures = 'reduced';
 end
-
-% Do this at the first time point (subtracting baseline)
-theTS = 'ts2-BL';
-processDataAgain = true;
-
-%===============================================================================
-% Prepare data:
-[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
-LabelDREADDSGroups(false,leftOrRight,rawData,whatAnalysis);
-LabelDREADDSGroups(false,leftOrRight,rawDataBL,whatAnalysis);
-
-
-if processDataAgain
-    IDs_tsX = TS_getIDs(theTS(1:3),rawDataBL,'ts');
-    filteredFileName = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
-    TS_FilterData(rawData,IDs_tsX,[],filteredFileName);
-    dataFile = filteredFileName;
-    % dataFile = TS_normalize(normalizeDataHow,[0.5,1],filteredFileName,true);
-else
-    [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
-    dataFile = fullfile(prePath,sprintf('HCTSA_%s.mat',theTS));
+if nargin < 4
+    % The first time point (subtracting baseline)
+    theTimePoint = 'ts2-BL';
 end
-fprintf(1,'Loading data from %s\n',dataFile);
-loadedData = load(dataFile);
+
+%-------------------------------------------------------------------------------
+% Prepare data:
+% Use baseline-removed, normalized data at the default time point:
+[~,~,~,dataTime] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
+fprintf(1,'Loading data from %s\n',dataTime);
+loadedData = load(dataTime);
 if strcmp(whatFeatures,'reduced')
-    fprintf(1,'Restricting to a reduced feature set!!\n');
     filteredData = FilterReducedSet(loadedData);
 else
     filteredData = loadedData;
