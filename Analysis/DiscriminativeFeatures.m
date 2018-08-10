@@ -12,7 +12,7 @@ if nargin < 3
     whatFeatures = 'reduced';
 end
 if nargin < 4
-    % The first time point (subtracting baseline)
+    % POST1 (subtracting baseline)
     theTimePoint = 'ts2-BL';
 end
 

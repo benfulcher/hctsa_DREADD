@@ -5,24 +5,23 @@ if nargin < 1
     whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM', 'Excitatory_PVCre'
 end
 if nargin < 2
-    whatFeatures = 'reduced'; % 'reduced','all'
+    whatFeatures = 'all'; % 'reduced','all'
 end
 if nargin < 3
     % First time point (subtracting baseline):
     theTimePoint = 'ts2-BL';
 end
 if nargin < 4
-    numNulls = 500;
+    numNulls = 200;
 end
 
 %-------------------------------------------------------------------------------
 regionLabels = {'right','left','control'};
 numRegions = length(regionLabels);
 
-% Pre-processing:
-theClassifier = 'svm_linear';
 
 % Cross-validation machine learning parameters:
+theClassifier = 'svm_linear';
 numFolds = 10;
 numRepeats = 100;
 
@@ -35,7 +34,7 @@ pVals = zeros(numRegions,1);
 for k = 1:numRegions
     theRegion = regionLabels{k};
     % Use baseline-removed, normalized data at the default time point:
-    [~,~,~,~,dataTimeNorm] = GiveMeLeftRightInfo(theRegion,whatAnalysis,theTS);
+    [~,~,~,~,dataTimeNorm] = GiveMeLeftRightInfo(theRegion,whatAnalysis,theTimePoint);
 
     fprintf(1,'Loading data from %s\n',dataTimeNorm);
     loadedData = load(dataTimeNorm);
@@ -44,7 +43,7 @@ for k = 1:numRegions
     else
         normalizedData = loadedData;
     end
-    fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',theRegion,theTS);
+    fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',theRegion,theTimePoint);
     [foldLosses{k},nullStat{k}] = TS_classify(normalizedData,theClassifier,...
                         'numPCs',0,'numNulls',numNulls,...
                         'numFolds',numFolds,'numRepeats',numRepeats,...

@@ -8,6 +8,7 @@ if nargin < 1
 end
 
 leftOrRight = {'left','right','control'};
+numRegions = length(leftOrRight);
 
 for k = 1:3
     [prePath,rawData] = GiveMeLeftRightInfo(leftOrRight{k});

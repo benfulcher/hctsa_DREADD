@@ -1,9 +1,11 @@
-function IndividualTimePoint(leftOrRight,whatAnalysis,doBaseline)
+function IndividualTimePoint(leftOrRight,whatAnalysis,subtractBaseline)
 % Compare classifiability across time points for a given brain area
+% ^^^Requires running SplitByTimePoint first^^^
 %-------------------------------------------------------------------------------
 
 %-------------------------------------------------------------------------------
 % Check inputs, set defaults:
+%-------------------------------------------------------------------------------
 if nargin < 1
     leftOrRight = 'right';
 end
@@ -11,12 +13,9 @@ if nargin < 2
     whatAnalysis = 'Excitatory_SHAM'; % 'PVCre_SHAM','Excitatory_PVCre_SHAM'
 end
 if nargin < 3
-    doBaseline = true; % (subtract features at baseline)
+    subtractBaseline = true; % (subtract features at baseline)
 end
 
-%-------------------------------------------------------------------------------
-% ^^^Requires running SplitByTimePoint first^^^
-%-------------------------------------------------------------------------------
 labelByMouse = false;
 
 % Classification settings:
@@ -26,7 +25,7 @@ numFolds = 10;
 
 %-------------------------------------------------------------------------------
 % Names of time points:
-if doBaseline
+if subtractBaseline
     tsCell = {'ts2-BL','ts3-BL','ts4-BL'};
 else
     tsCell = {'ts1','ts2','ts3','ts4'};
@@ -52,7 +51,7 @@ for i = 1:numTimePoints
     meanAcc(i,2) = mean(nullStat);
 end
 
-% Plot across time:
+% Plot trends across time:
 f = figure('color','w'); ax = gca; hold('on')
 plot(meanAcc(:,1),'o-k');
 plot(meanAcc(:,2),'x:b');

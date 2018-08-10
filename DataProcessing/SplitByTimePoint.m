@@ -2,9 +2,10 @@ function SplitByTimePoint(whatAnalysis,doBL,whatNormalization)
 % Splits the required HCTSA files by individual time point
 %-------------------------------------------------------------------------------
 
+%-------------------------------------------------------------------------------
 % Check inputs:
 if nargin < 1
-    whatAnalysis = 'PVCre_SHAM';
+    whatAnalysis = 'Excitatory_SHAM';
 end
 if nargin < 2
     doBL = true;
@@ -13,6 +14,7 @@ if nargin < 3
     whatNormalization = 'scaledRobustSigmoid';
 end
 labelByMouse = false;
+%-------------------------------------------------------------------------------
 
 if doBL
     tsCell = {'ts2-BL','ts3-BL','ts4-BL'};
@@ -25,24 +27,26 @@ end
 numTimePoints = length(tsCell);
 
 leftOrRight = {'right','left','control'};
+numRegions = length(leftOrRight);
 
-for j = 1:3
+for j = 1:numRegions
     [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight{j},whatAnalysis);
     for t = 1:numTimePoints
-        theTS = tsCell{t};
+        theTimePoint = tsCell{t};
+
         % Make new HCTSA files by filtering:
         if doBL
             theFile = rawDataBL; % baseline-subtracted data
         else
             theFile = rawData; % raw data
         end
-        IDs_tsX = TS_getIDs(theTS(1:3),theFile,'ts');
+        IDs_tsX = TS_getIDs(theTimePoint(1:3),theFile,'ts');
 
         if isempty(IDs_tsX)
-            warning('No matches found for %s',theTS)
+            warning('No matches found for %s',theTimePoint)
             continue
         end
-        filteredFileName = sprintf('%s_%s.mat',rawData(1:end-4),theTS);
+        filteredFileName = sprintf('%s_%s.mat',rawData(1:end-4),theTimePoint);
         filteredFileName = TS_FilterData(theFile,IDs_tsX,[],filteredFileName);
 
         % Normalize:
