@@ -38,6 +38,7 @@ fprintf(1,'We found %u mice for %s in region %s\n',numMice,whatAnalysis,leftOrRi
 % 2) For each mouse ID, get the {ts1,ts2,ts3,ts4} or {ts1,ts2,ts3}
 % 3) Do the subtraction from the raw feature matrix
 dataMatSubtracted = zeros(numMice*(threeOrFour-1),size(dataRaw.TS_DataMat,2));
+rowLabelsCheck = cell(numMice*(threeOrFour-1),1);
 switch differenceHow
 case 'subtract'
     f_transform = @(x1,x2) x1-x2;
@@ -57,34 +58,51 @@ for i = 1:numMice
         timePoint = timePoint';
     end
 
-    % Get baseline data:
-    data_baseline = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts1'),:);
-    data_ts2 = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts2'),:);
-    data_ts3 = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts3'),:);
+    % Define indexes (old):
+    index_ts = zeros(threeOrFour,1);
+    index_ts(1) = find(index & strcmp(timePoint,'ts1'));
+    index_ts(2) = find(index & strcmp(timePoint,'ts2'));
+    index_ts(3) = find(index & strcmp(timePoint,'ts3'));
+
+    % Use indexes to partition original data
+    data_baseline = dataRaw.TS_DataMat(index_ts(1),:);
+    data_ts2 = dataRaw.TS_DataMat(index_ts(2),:);
+    data_ts3 = dataRaw.TS_DataMat(index_ts(3),:);
 
     % Transform relative to baseline and save to indices of the new data matrix:
     indexNew = (i-1)*(threeOrFour-1)+1:i*(threeOrFour-1);
     dataMatSubtracted(indexNew(1),:) = f_transform(data_ts2,data_baseline);
     dataMatSubtracted(indexNew(2),:) = f_transform(data_ts3,data_baseline);
+    rowLabelsCheck{indexNew(1)} = dataRaw.TimeSeries(index_ts(2)).Name;
+    rowLabelsCheck{indexNew(2)} = dataRaw.TimeSeries(index_ts(3)).Name;
 
     if threeOrFour==4
-        data_ts4 = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts4'),:);
+        index_ts(4) = find(index & strcmp(timePoint,'ts4'));
+        data_ts4 = dataRaw.TS_DataMat(index_ts(4),:);
         dataMatSubtracted(indexNew(3),:) = f_transform(data_ts4,data_baseline);
+        rowLabelsCheck{indexNew(3)} = dataRaw.TimeSeries(index_ts(4)).Name;
     end
 end
+
+%-------------------------------------------------------------------------------
+% Identify subtracted version with new TS_DataMat:
+TS_DataMat = dataMatSubtracted;
+% Now match labels baseline data from row labels:
+[~,~,ib] = intersect(rowLabelsCheck,{dataRaw.TimeSeries.Name},'stable');
+TimeSeries = dataRaw.TimeSeries(ib);
+TS_Quality = dataRaw.TS_Quality(ib,:);
+
+% Check that the new time series array matches rowLabelsCheck
 
 %-------------------------------------------------------------------------------
 % 4) Save back to a new HCTSA file (copy to a new version):
 newFileName = sprintf('%s_baselineSub.mat',rawData(1:end-4));
 system(sprintf('cp %s %s',rawData,newFileName));
-TS_DataMat = dataMatSubtracted;
+% Write over with new data:
 save(newFileName,'TS_DataMat','-append');
-% Now we remove baseline data from these:
-wasKept = ~ismember(timePoint,'ts1');
-TimeSeries = dataRaw.TimeSeries(wasKept);
 save(newFileName,'TimeSeries','-append');
-TS_Quality = dataRaw.TS_Quality(wasKept,:);
 save(newFileName,'TS_Quality','-append');
-fprintf(1,'Saved new HCTSA data, with baseline removed to %s\n',newFileName);
+fprintf(1,'Saved new HCTSA data, with baseline removed by %s to %s\n',...
+                            differenceHow,newFileName);
 
 end

@@ -10,7 +10,7 @@ switch whichSetting
 case 1
     % SETTING 1:
     differenceHow = 'relativeProp'; % (how to quantify differences)
-    whatNormalizationBaseline = 'none'; % (how to normalize features)
+    whatNormalizationBaseline = 'zscore'; % (how to normalize features)
 case 2
     % SETTING 2:
     differenceHow = 'subtract';
