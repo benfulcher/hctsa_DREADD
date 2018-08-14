@@ -36,13 +36,8 @@ for k = 1:numRegions
     % Use baseline-removed, normalized data at the default time point:
     [~,~,~,~,dataTimeNorm] = GiveMeLeftRightInfo(theRegion,whatAnalysis,theTimePoint);
 
-    fprintf(1,'Loading data from %s\n',dataTimeNorm);
-    loadedData = load(dataTimeNorm);
-    if strcmp(whatFeatures,'reduced')
-        normalizedData = FilterReducedSet(loadedData);
-    else
-        normalizedData = loadedData;
-    end
+    dataStruct = LoadDataFile(dataTimeNorm,whatFeatures)
+
     fprintf(1,'\n\n %s -- TIME POINT %s \n\n\n',theRegion,theTimePoint);
     [foldLosses{k},nullStat{k}] = TS_classify(normalizedData,theClassifier,...
                         'numPCs',0,'numNulls',numNulls,...

@@ -1,4 +1,4 @@
-function IndividualTimePoint(leftOrRight,whatAnalysis,subtractBaseline)
+function IndividualTimePoint(leftOrRight,whatAnalysis,subtractBaseline,whatFeatures)
 % Compare classifiability across time points for a given brain area
 % ^^^Requires running SplitByTimePoint first^^^
 %-------------------------------------------------------------------------------
@@ -15,10 +15,14 @@ end
 if nargin < 3
     subtractBaseline = true; % (subtract features at baseline)
 end
+if nargin < 4
+    whatFeatures = 'all';
+end
 
 labelByMouse = false;
 
 % Classification settings:
+theClassifier = 'svm_linear';
 numNulls = 50;
 numRepeats = 50;
 numFolds = 10;
@@ -44,7 +48,9 @@ for i = 1:numTimePoints
     fprintf(1,'\n\n TIME POINT %s \n\n\n',theTimePoint);
 
     [~,~,~,~,normalizedData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
-    [foldLosses,nullStat] = TS_classify(normalizedData,'svm_linear','numPCs',0,...
+    dataStruct = LoadDataFile(normalizedData,whatFeatures);
+
+    [foldLosses,nullStat] = TS_classify(normalizedData,theClassifier,'numPCs',0,...
                     'numNulls',numNulls,'numFolds',numFolds,...
                     'numRepeats',numRepeats,'seedReset','none');
     meanAcc(i,1) = mean(foldLosses);
