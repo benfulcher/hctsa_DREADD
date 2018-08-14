@@ -1,4 +1,7 @@
 function ConvertToBaselineDiffs(leftOrRight,whatAnalysis,differenceHow)
+% Convert HCTSA files across different time points to differences relative
+% to baseline.
+%-------------------------------------------------------------------------------
 
 if nargin < 1
     leftOrRight = 'right';
@@ -11,10 +14,9 @@ if nargin < 3
     differenceHow = 'relativeProp'; % 'subtract'
 end
 %-------------------------------------------------------------------------------
-
 switch whatAnalysis
 case 'Excitatory_SHAM'
-    threeOrFour = 4;
+    threeOrFour = 4; % there are four time points
 case {'PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM'}
     % PVCre data doesn't contain information about the fourth time point...
     threeOrFour = 3;
@@ -30,7 +32,7 @@ dataRaw = load(rawData);
 [expTypeMouseID,timePoint] = ConvertToMouseExpID(dataRaw.TimeSeries,leftOrRight);
 uniqueMiceExp = unique(expTypeMouseID);
 numMice = length(uniqueMiceExp);
-fprintf(1,'%u mice\n',numMice);
+fprintf(1,'We found %u mice for %s in region %s\n',numMice,whatAnalysis,leftOrRight);
 
 %-------------------------------------------------------------------------------
 % 2) For each mouse ID, get the {ts1,ts2,ts3,ts4} or {ts1,ts2,ts3}
@@ -43,22 +45,31 @@ case 'relativeProp'
     f_transform = @(x1,x2) (x1-x2)./x2;
 end
 
+% Correct for each mouse individually:
 for i = 1:numMice
     index = strcmp(expTypeMouseID,uniqueMiceExp{i});
     if sum(index)~=threeOrFour
         error('Error matching %s',uniqueMiceExp{i});
+    else
+        fprintf(1,'Baseline correction for mouse %s\n',uniqueMiceExp{i});
     end
     if size(index,1)~=size(timePoint,1)
         timePoint = timePoint';
     end
-    isBaseline = index & strcmp(timePoint,'ts1');
-    baseLine = dataRaw.TS_DataMat(isBaseline,:);
 
-    indexNew = (i-1)*(threeOrFour-1)+1:i*threeOrFour;
-    dataMatSubtracted(indexNew(1),:) = f_transform(dataRaw.TS_DataMat(index & strcmp(timePoint,'ts2'),:),baseLine);
-    dataMatSubtracted(indexNew(2),:) = f_transform(dataRaw.TS_DataMat(index & strcmp(timePoint,'ts3'),:),baseLine);
+    % Get baseline data:
+    data_baseline = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts1'),:);
+    data_ts2 = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts2'),:);
+    data_ts3 = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts3'),:);
+
+    % Transform relative to baseline and save to indices of the new data matrix:
+    indexNew = (i-1)*(threeOrFour-1)+1:i*(threeOrFour-1);
+    dataMatSubtracted(indexNew(1),:) = f_transform(data_ts2,data_baseline);
+    dataMatSubtracted(indexNew(2),:) = f_transform(data_ts3,data_baseline);
+
     if threeOrFour==4
-        dataMatSubtracted(indexNew(3),:) = f_transform(dataRaw.TS_DataMat(index & strcmp(timePoint,'ts4'),:),baseLine);
+        data_ts4 = dataRaw.TS_DataMat(index & strcmp(timePoint,'ts4'),:);
+        dataMatSubtracted(indexNew(3),:) = f_transform(data_ts4,data_baseline);
     end
 end
 

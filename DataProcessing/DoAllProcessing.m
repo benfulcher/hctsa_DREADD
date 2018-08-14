@@ -4,11 +4,21 @@ function DoAllProcessing()
 % Settings controlling data processing
 %-------------------------------------------------------------------------------
 
-% How to measure differences relative to baseline:
-differenceHow = 'relativeProp'; % 'subtract'
+whichSetting = 1;
 
-% How to normalize features:
-whatNormalization = 'scaledRobustSigmoid';
+switch whichSetting
+case 1
+    % SETTING 1:
+    differenceHow = 'relativeProp'; % (how to quantify differences)
+    whatNormalizationBaseline = 'none'; % (how to normalize features)
+case 2
+    % SETTING 2:
+    differenceHow = 'subtract';
+    whatNormalizationBaseline = 'mixedSigmoid';
+end
+
+% How to normalize features for a given time point:
+whatNormalizationSingle = 'mixedSigmoid'; % (how to normalize features)
 
 % The areas to analyze:
 whatRegions = {'left','right','control'};
@@ -41,8 +51,8 @@ end
 % Split by time point:
 for j = 1:numAnalyses
     theAnalysis = whatAnalysis{j};
-    SplitByTimePoint(theAnalysis,false,whatNormalization)
-    SplitByTimePoint(theAnalysis,true,whatNormalization)
+    SplitByTimePoint(theAnalysis,false,whatNormalizationSingle)
+    SplitByTimePoint(theAnalysis,true,whatNormalizationBaseline)
 end
 
 end
