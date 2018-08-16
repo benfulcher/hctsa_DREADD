@@ -1,17 +1,12 @@
 %-------------------------------------------------------------------------------
 % PARAMETERS:
 leftOrRight = 'control';
-whatNormalization = 'scaledRobustSigmoid';
+whatAnalysis = 'Excitatory_SHAM';
 labelByMouse = false; % do SHAM/DREADDs instead of labeling by mouse
 doCluster = true;
-useOldResults = true;
 
-if useOldResults
-    [prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight);
-    normDataBL = [rawDataBL(1:end-4),'_N.mat'];
-else
-    [prePath,rawData,rawDataBL,normData,normDataBL] = Foreplay(leftOrRight,whatNormalization,labelByMouse,doCluster);
-end
+[prePath,rawData,rawDataBL] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
+normDataBL = [rawDataBL(1:end-4),'_N.mat'];
 
 %-------------------------------------------------------------------------------
 % Load data in as a structure:

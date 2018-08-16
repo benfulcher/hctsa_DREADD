@@ -34,7 +34,7 @@ if subtractBaseline
 else
     tsCell = {'ts1','ts2','ts3','ts4'};
 end
-if strcmp(whatAnalysis,'PVCre_SHAM')
+if ismember(whatAnalysis,{'Excitatory_PVCre','PVCre_SHAM'})
     tsCell = tsCell(1:end-1);
 end
 numTimePoints = length(tsCell);
@@ -47,8 +47,8 @@ for i = 1:numTimePoints
     theTimePoint = tsCell{i};
     fprintf(1,'\n\n TIME POINT %s \n\n\n',theTimePoint);
 
-    [~,~,~,~,normalizedData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
-    dataStruct = LoadDataFile(normalizedData,whatFeatures);
+    [~,~,~,~,normTimePoint] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
+    normalizedData = LoadDataFile(normTimePoint,whatFeatures);
 
     [foldLosses,nullStat] = TS_classify(normalizedData,theClassifier,'numPCs',0,...
                     'numNulls',numNulls,'numFolds',numFolds,...

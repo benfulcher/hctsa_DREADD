@@ -3,25 +3,30 @@ function DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures,theTimePoi
 %-------------------------------------------------------------------------------
 
 if nargin < 1
-    whatAnalysis = 'Excitatory_SHAM'; %'Excitatory_PVCre_SHAM', 'PVCre_SHAM'
+    whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_PVCre_SHAM', 'PVCre_SHAM'
 end
 if nargin < 2
     leftOrRight = 'right';
 end
 if nargin < 3
-    whatFeatures = 'reduced';
+    whatFeatures = 'all';
 end
 if nargin < 4
-    % POST1 (subtracting baseline)
-    theTimePoint = 'ts2-BL';
+    theTimePoint = 'ts2-BL'; % POST1 (subtracting baseline)
+    theTimePoint = 'all-BL'; % combine all time points (subtracting baseline)
 end
 
 %-------------------------------------------------------------------------------
 % Prepare data:
 % Use baseline-removed, normalized data at the default time point:
-[~,~,~,dataTime] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
-fprintf(1,'Loading data from %s\n',dataTime);
-loadedData = load(dataTime);
+[~,dataAll,~,dataTime] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
+if strcmp(theTimePoint,'all-BL')
+    theData = dataAll;
+else
+    theData = dataTime;
+end
+fprintf(1,'Loading data from %s\n',theData);
+loadedData = load(theData);
 if strcmp(whatFeatures,'reduced')
     filteredData = FilterReducedSet(loadedData);
 else
@@ -31,24 +36,34 @@ end
 %-------------------------------------------------------------------------------
 % Compute all ranksum p-values for hctsa results in filteredData:
 %-------------------------------------------------------------------------------
-[pVals,FDR_qvals] = FeaturePValues(filteredData);
+thresholdGood = 0.6;
+doExact = false;
+[pVals,FDR_qvals] = FeaturePValues(filteredData,thresholdGood,doExact);
+% Plot them:
+f = figure('color','w');
+histogram(FDR_qvals)
+
+% List significant ones:
 isSig = (FDR_qvals < 0.05);
-sigInd = find(isSig);
+numFeatures = sum(isSig);
 [~,ix] = sort(FDR_qvals,'ascend');
-sigInd = ix(1:sum(isSig));
+sigInd = ix(1:numFeatures);
+% for i = 1:N
+%     title(sprintf('p = %.3g, p-corr = %.3g',pVals(ix(i)),FDR_qvals(ix(i))),'interpreter','none')
+% end
 
 %-------------------------------------------------------------------------------
+% Plot some top ones:
 % features = [16,2198,3718];
 % features = [26,2705,3750];
-features = [filteredData.Operations(sigInd).ID];
-numFeatures = sum(isSig);
+sigFeatures = [filteredData.Operations(sigInd).ID];
 isG1 = ([filteredData.TimeSeries.Group]==1);
 isG2 = ([filteredData.TimeSeries.Group]==2);
 means = zeros(numFeatures,2);
 stds = zeros(numFeatures,2);
 f = figure('color','w');
-for i = 1:numFeatures
-    opInd = [filteredData.Operations.ID]==features(i);
+for i = 1:min(15,numFeatures)
+    opInd = [filteredData.Operations.ID]==sigFeatures(i);
     f1 = filteredData.TS_DataMat(isG1,opInd);
     f2 = filteredData.TS_DataMat(isG2,opInd);
     means(i,1) = mean(f1);
@@ -67,6 +82,7 @@ for i = 1:numFeatures
     ax.XTick = 1:2;
     ax.XTickLabel = filteredData.groupNames;
     ax.XLim = [0.5,2.5];
-    % pVal = ranksum(f1,f2);
     title(sprintf('p = %.3g, p-corr = %.3g',pVals(opInd),FDR_qvals(opInd)),'interpreter','none')
+end
+
 end

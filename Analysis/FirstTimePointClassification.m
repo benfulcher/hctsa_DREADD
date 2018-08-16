@@ -55,7 +55,7 @@ end
 %-------------------------------------------------------------------------------
 % Permutation test p-values relative to null:
 for k = 1:numRegions
-    fprintf(1,'%s (%.2f%%)-- %.3g\n',theRegion,meanAcc(k,1),pVals(k));
+    fprintf(1,'%s (%.2f%%)-- %.3g\n',regionLabels{k},meanAcc(k,1),pVals(k));
 end
 
 %-------------------------------------------------------------------------------

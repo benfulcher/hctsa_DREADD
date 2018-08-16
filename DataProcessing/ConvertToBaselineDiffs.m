@@ -2,7 +2,6 @@ function ConvertToBaselineDiffs(leftOrRight,whatAnalysis,differenceHow)
 % Convert HCTSA files across different time points to differences relative
 % to baseline.
 %-------------------------------------------------------------------------------
-
 if nargin < 1
     leftOrRight = 'right';
 end
@@ -82,6 +81,8 @@ for i = 1:numMice
         dataMatSubtracted(indexNew(3),:) = f_transform(data_ts4,data_baseline);
         rowLabelsCheck{indexNew(3)} = dataRaw.TimeSeries(index_ts(4)).Name;
     end
+
+    keyboard
 end
 
 %-------------------------------------------------------------------------------
@@ -93,6 +94,10 @@ TimeSeries = dataRaw.TimeSeries(ib);
 TS_Quality = dataRaw.TS_Quality(ib,:);
 
 % Check that the new time series array matches rowLabelsCheck
+if ~all(strcmp({TimeSeries.Name},rowLabelsCheck))
+    warning('error matching on baseline subtraction')
+    keyboard
+end
 
 %-------------------------------------------------------------------------------
 % 4) Save back to a new HCTSA file (copy to a new version):

@@ -36,16 +36,25 @@ For excitatory-sham differences (relative to baseline):
 SplitByTimePoint('Excitatory_SHAM',true)
 ```
 
+### A reduced feature set
+Can generate a reduced feature set using a custom threshold here:
+
+```matlab
+ProduceReducedFeatures()
+```
+
 ## Data analysis
 
 ### How different are dynamics at a given time point
 
+This uses 100 nulls (for speed) to compute the difference between excitatory and sham conditions at Delta.1 (`'ts2-BL'`) in each of the three regions of interest:
 ```matlab
-FirstTimePointClassification('Excitatory_SHAM','reduced','ts2',100)
+FirstTimePointClassification('Excitatory_SHAM','reduced','ts2-BL',100)
 ```
 
 ### Which features are discriminatory
 
+This characterizes specific excitatory-sham differences in the injected region at Delta.1, using a reduced feature set.
 ```matlab
-DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures,theTimePoint)
+DiscriminativeFeatures('Excitatory_SHAM','right','reduced','ts2-BL')
 ```
