@@ -12,16 +12,15 @@ if nargin < 3
     whatFeatures = 'all';
 end
 if nargin < 4
-    theTimePoint = 'ts2-BL'; % POST1 (subtracting baseline)
-    theTimePoint = 'all-BL'; % combine all time points (subtracting baseline)
+    theTimePoint = 'ts2-BL'; % 'ts2-BL' (POST1) 'all-BL' (all POST time points combined)
 end
 
 %-------------------------------------------------------------------------------
 % Prepare data:
 % Use baseline-removed, normalized data at the default time point:
-[~,dataAll,~,dataTime] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
+[~,~,dataAllN,dataTime] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,theTimePoint);
 if strcmp(theTimePoint,'all-BL')
-    theData = dataAll;
+    theData = dataAllN;
 else
     theData = dataTime;
 end
@@ -36,9 +35,20 @@ end
 %-------------------------------------------------------------------------------
 % Compute all ranksum p-values for hctsa results in filteredData:
 %-------------------------------------------------------------------------------
+numFeatures = 200;
+numFeaturesDistr = 25;
+numNulls = 0;
+whatStatistic = 'ustatExact';
+[ifeat,testStat,testStat_rand] = TS_TopFeatures(filteredData,whatStatistic,...
+            'numTopFeatures',numFeatures,...
+            'numFeaturesDistr',numFeaturesDistr,...
+            'whatPlots',{'histogram','distributions','cluster'},...
+            'numNulls',numNulls);
+
 thresholdGood = 0.6;
-doExact = false;
+doExact = true;
 [pVals,FDR_qvals] = FeaturePValues(filteredData,thresholdGood,doExact);
+
 % Plot them:
 f = figure('color','w');
 histogram(FDR_qvals)

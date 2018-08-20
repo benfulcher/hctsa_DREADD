@@ -1,4 +1,7 @@
 function [pVals,FDR_qvals] = FeaturePValues(hctsaData,thresholdGood,doExact)
+% Compute p-value for each feature for group difference.
+%-------------------------------------------------------------------------------
+
 if nargin < 2
     thresholdGood = 0.6;
     % Both groups need at least this many finite values to compute a statistic
@@ -6,8 +9,10 @@ end
 if nargin < 3
     doExact = true;
 end
+%-------------------------------------------------------------------------------
 
 % Output:
+numOps = length(hctsaData.Operations);
 if doExact
     fprintf(1,'Computing exact ranksum p-values across %u features\n',numOps);
 else
@@ -17,7 +22,6 @@ end
 %-------------------------------------------------------------------------------
 % Compute all ranksum p-values:
 %-------------------------------------------------------------------------------
-numOps = length(hctsaData.Operations);
 isG1 = ([hctsaData.TimeSeries.Group]==1);
 isG2 = ([hctsaData.TimeSeries.Group]==2);
 pVals = zeros(numOps,1);

@@ -23,7 +23,7 @@ end
 
 %-------------------------------------------------------------------------------
 % Set file path
-[prePath,rawData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
+[~,rawData] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis);
 dataRaw = load(rawData);
 
 %-------------------------------------------------------------------------------
@@ -81,20 +81,19 @@ for i = 1:numMice
         dataMatSubtracted(indexNew(3),:) = f_transform(data_ts4,data_baseline);
         rowLabelsCheck{indexNew(3)} = dataRaw.TimeSeries(index_ts(4)).Name;
     end
-
-    keyboard
 end
 
 %-------------------------------------------------------------------------------
 % Identify subtracted version with new TS_DataMat:
 TS_DataMat = dataMatSubtracted;
 % Now match labels baseline data from row labels:
-[~,~,ib] = intersect(rowLabelsCheck,{dataRaw.TimeSeries.Name},'stable');
+[~,ia,ib] = intersect(rowLabelsCheck,{dataRaw.TimeSeries.Name},'stable');
 TimeSeries = dataRaw.TimeSeries(ib);
 TS_Quality = dataRaw.TS_Quality(ib,:);
 
 % Check that the new time series array matches rowLabelsCheck
-if ~all(strcmp({TimeSeries.Name},rowLabelsCheck))
+if ~all(diff(ia)==1)
+    % ~all(strcmp({TimeSeries.Name}',rowLabelsCheck))
     warning('error matching on baseline subtraction')
     keyboard
 end

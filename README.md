@@ -1,6 +1,6 @@
 # hctsa_DREADD
 
-Analysis of DREADDs time-series data
+Analysis of DREADDs BOLD time-series data
 
 ## Data processing
 
