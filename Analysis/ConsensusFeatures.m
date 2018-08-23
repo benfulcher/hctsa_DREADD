@@ -1,27 +1,34 @@
-% ConsensusFeatures
+% function [fIDs,FDR_qvals] = ConsensusFeatures(whatAnalysis,leftOrRight,whatFeatures)
 % Search for features that are similarly discriminative across multiple time points
 %-------------------------------------------------------------------------------
-whatAnalysis = 'PVCre_SHAM'; % 'Excitatory_SHAM'
+% if nargin < 1
+    whatAnalysis = 'Excitatory_SHAM'; % Excitatory_SHAM, PVCre_SHAM, Excitatory_PVCre
+% end
+% if nargin < 2
+    leftOrRight = 'left';
+% end
+% if nargin < 3
+    whatFeatures = 'all';
+% end
+
+
 thresholdGood = 0.6;
 doExact = true;
-prePath = 'HCTSA_RightCTX';
 
 %-------------------------------------------------------------------------------
 % Load data:
 %-------------------------------------------------------------------------------
 switch whatAnalysis
 case 'Excitatory_SHAM'
-    numPoints = 3;
-    theData = cell(numPoints,1);
-    for k = 1:numPoints
-        theData{k} = load(fullfile(prePath,sprintf('HCTSA_ts%u-BL.mat',k+1)));
-    end
-case 'PVCre_SHAM'
-    numPoints = 2;
-    theData = cell(numPoints,1);
-    for k = 1:numPoints
-        theData{k} = load(fullfile(prePath,sprintf('HCTSA_PVCre_SHAM_ts%u-BL.mat',k+1)));
-    end
+    T = {'ts2-BL','ts3-BL','ts4-BL'};
+case {'PVCre_SHAM','Excitatory_PVCre'}
+    T = {'ts2-BL','ts3-BL'};
+end
+numPoints = length(T);
+theData = cell(numPoints,1);
+for k = 1:numPoints
+    [prePath,rawData,rawDataBL,dataTime,dataTimeNorm] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,T{k});
+    theData{k} = LoadDataFile(dataTime,whatFeatures);
 end
 
 %-------------------------------------------------------------------------------
@@ -49,6 +56,7 @@ end
 
 % Correct Fisher-combined p-values:
 FDR_qvals = mafdr(pValsComb,'BHFDR','true');
+fIDs = [theData{1}.Operations.ID];
 [~,ix] = sort(FDR_qvals,'ascend');
 
 %-------------------------------------------------------------------------------
@@ -59,8 +67,8 @@ numSig = sum(isSig);
 fprintf(1,'%u significant at 5%% FDR\n',numSig);
 [~,ix] = sort(FDR_qvals,'ascend');
 N = max(20,numSig); % List at least 20, and if more, all significant (corrected)
-N = min(200,numSig);
-for i = 100:N
+N = min(200,N);
+for i = 1:N
     ind = ix(i);
     fprintf(1,'[%u]%s(%s): q = %.3g\n',hctsaData.Operations(ind).ID,...
             hctsaData.Operations(ind).Name,hctsaData.Operations(ind).Keywords,...
@@ -69,7 +77,7 @@ end
 
 %-------------------------------------------------------------------------------
 % Now we need to visualize:
-myFeatID = 4314;
+myFeatID = 7784;
 groupNames = theData{1}.groupNames;
 opInd = [theData{1}.Operations.ID]==myFeatID;
 redBlue = BF_getcmap('set1',3,1,0);
@@ -121,3 +129,5 @@ end
 plot(ax.XLim,zeros(2,1),'--k')
 ax.TickLabelInterpreter = 'none';
 title(theData{1}.Operations(opInd).Name,'interpreter','none')
+
+% end

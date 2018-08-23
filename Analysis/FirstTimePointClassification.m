@@ -1,5 +1,5 @@
 function FirstTimePointClassification(whatAnalysis,whatFeatures,theTimePoint,numNulls)
-% Classification at each region at POST1 (relative to baseline)
+% Classification at each region at a given time point (Delta 1 by default)
 %-------------------------------------------------------------------------------
 if nargin < 1
     whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM', 'Excitatory_PVCre'
@@ -8,8 +8,7 @@ if nargin < 2
     whatFeatures = 'reduced'; % 'reduced', 'all'
 end
 if nargin < 3
-    % First time point (subtracting baseline):
-    theTimePoint = 'ts2-BL';
+    theTimePoint = 'ts2-BL'; % First time point (subtracting baseline)
 end
 if nargin < 4
     numNulls = 50;

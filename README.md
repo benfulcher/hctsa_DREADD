@@ -37,7 +37,7 @@ SplitByTimePoint('Excitatory_SHAM',true)
 ```
 
 ### A reduced feature set
-Can generate a reduced feature set using a custom threshold here:
+Can generate a reduced feature set using a custom similarity threshold here:
 
 ```matlab
 ProduceReducedFeatures()

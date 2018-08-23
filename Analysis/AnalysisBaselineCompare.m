@@ -11,6 +11,7 @@ normDataBL = [rawDataBL(1:end-4),'_N.mat'];
 %-------------------------------------------------------------------------------
 % Load data in as a structure:
 unnormalizedData = load(rawDataBL);
+
 % Load normalized data in a structure:
 normalizedData = load(normDataBL);
 
