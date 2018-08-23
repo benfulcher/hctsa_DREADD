@@ -22,12 +22,18 @@ classVarFilter = true;
 filterOpt = [0.5,1];
 
 % The areas to analyze:
-whatRegions = {'left','right','control'};
+whatRegions = {'right','left','control'};
 numRegs = length(whatRegions);
 
 % The types of data groupings to investigate:
 whatAnalysis = {'Excitatory_SHAM','PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM'};
 numAnalyses = length(whatAnalysis);
+
+%-------------------------------------------------------------------------------
+% Generate data subsets:
+for j = 1:numAnalyses
+    FilterDataset(whatAnalysis{j});
+end
 
 %-------------------------------------------------------------------------------
 % Transform to baseline differences and label groups:

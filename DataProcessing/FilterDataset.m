@@ -7,10 +7,10 @@ if nargin < 1
     whatAnalysis = 'Excitatory_SHAM';
 end
 
-leftOrRight = {'left','right','control'};
+leftOrRight = {'right','left','control'};
 numRegions = length(leftOrRight);
 
-for k = 1:3
+for k = 1:numRegions
     [prePath,rawData] = GiveMeLeftRightInfo(leftOrRight{k});
 
     switch whatAnalysis
