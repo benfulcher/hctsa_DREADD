@@ -10,7 +10,7 @@ if nargin < 2
     fprintf(1,'Analyzing excitatory-sham data\n');
 end
 if nargin < 3
-    differenceHow = 'relativeProp'; % 'subtract'
+    differenceHow = 'subtract'; % 'subtract', 'relativeProp'
 end
 %-------------------------------------------------------------------------------
 switch whatAnalysis

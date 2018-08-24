@@ -2,19 +2,35 @@
 
 Analysis of DREADDs BOLD time-series data
 
-## Data processing
+## Data preparation
+You must have the following files downloaded or computed in the directories below:
+* `HCTSA_Control/HCTSA.mat`
+* `HCTSA_Control/HCTSA_PVCre.mat`
+* `HCTSA_LeftCTX/HCTSA.mat`
+* `HCTSA_LeftCTX/HCTSA_PVCre.mat`
+* `HCTSA_RightCTX/HCTSA.mat`
+* `HCTSA_RightCTX/HCTSA_PVCre.mat`
 
-Splitting of HCTSA data into different subsets can be achieved by running:
-```
+## Data processing
+Preparation of raw HCTSA data into different subsets for processing can be achieved by running:
+```matlab
 DoAllProcessing()
 ```
 
-This script does the following:
+This script does the following steps:
 
-### Convert to baseline differences
+### Splitting into files for specific sets of classes
+For example, to make new files for classification of excitatory versus SHAM:
 
 ```matlab
-ConvertToBaselineDiffs('right','Excitatory_SHAM')
+FilterDataset('Excitatory_SHAM');
+```
+
+### Convert to baseline differences
+Normalize features of each mouse across time relative to their baseline dynamics:
+
+```matlab
+ConvertToBaselineDiffs('right','Excitatory_SHAM','subtract')
 ```
 
 ### Label groups of time series for a given analysis
