@@ -1,15 +1,15 @@
-% function testStatCompareTime(whatAnalysis,whatFeatures,leftOrRight)
-% if nargin < 1
+function testStatCompareTime(whatAnalysis,leftOrRight,whatFeatures)
+if nargin < 1
     whatAnalysis = 'Excitatory_SHAM';
-% end
-% if nargin < 2
-    whatFeatures = 'all';
-% end
-% if nargin < 3
+end
+if nargin < 2
     leftOrRight = 'right';
-% end
+end
+if nargin < 3
+    whatFeatures = 'all';
+end
 
-doExact = true;
+doExact = false;
 thresholdGood = 0.6;
 
 %-------------------------------------------------------------------------------
@@ -24,8 +24,7 @@ testStat = cell(numTimePoints,1);
 for k = 1:numTimePoints
     numPoints = length(T);
     [prePath,rawData,rawDataBL,dataTime,dataTimeNorm] = GiveMeLeftRightInfo(leftOrRight,whatAnalysis,T{k});
-    hctsaData = LoadDataFile(dataTime,whatFeatures); % Since un-normalized, need to throw NaNs into missing data:
-    hctsaData.TS_DataMat(hctsaData.TS_Quality > 0) = NaN;
+    hctsaData = LoadDataFile(dataTime,whatFeatures);
     [~,~,testStat{k}] = FeaturePValues(hctsaData,thresholdGood,doExact);
 end
 
@@ -44,6 +43,13 @@ for i = 1:numTimePoints
         end
     end
 end
+for i = 1:numTimePoints
+    for j = 1:numTimePoints
+        AX(i,j).XLim = [0,1];
+        if i~=j
+            AX(i,j).YLim = [0,1];
+        end
+    end
+end
 
-
-% end
+end

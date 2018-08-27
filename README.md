@@ -70,7 +70,45 @@ FirstTimePointClassification('Excitatory_SHAM','reduced','ts2-BL',100)
 
 ### Which features are discriminatory
 
-This characterizes specific excitatory-sham differences in the injected region at Delta.1, using a reduced feature set.
+This code characterizes specific excitatory-sham differences in the injected region at Delta.1, using a reduced feature set:
 ```matlab
 DiscriminativeFeatures('Excitatory_SHAM','right','reduced','ts2-BL')
+```
+
+This code assumes each measured time point is independent (which turns out to be a bad assumption), and looks for features that show consistent differences to SHAM across time:
+
+```matlab
+ConsensusFeatures('Excitatory_SHAM','right','all')
+```
+
+### Feature score consistency
+Are features selected for a given analysis consistent across all time points?
+```matlab
+testStatCompareTime('Excitatory_SHAM','right','all')
+```
+
+Are `Excitatory_SHAM` features similar to `PVCre_SHAM` features (at individual time points)?
+```matlab
+testStatCompareConditionTime('right','all')
+```
+
+Do consensus features selected in `Excitatory_SHAM` differ from those selected in `PVCre_SHAM`?
+```matlab
+pValCompare
+```
+
+Can feature scores be measured relative to those in a control region to look for additional correlations in specific brain regions?
+```matlab
+testStatRelativeControl('right','all')
+```
+
+### Plotting differences
+Plot low-dimensional projections of the data:
+```matlab
+LowDimProj('Excitatory_SHAM','right')
+```
+
+Plots for feature ID 33, distributions relative to baseline for `Excitatory_SHAM` in the right hemisphere region:
+```matlab
+PlotConsensus(33,'Excitatory_SHAM','right')
 ```

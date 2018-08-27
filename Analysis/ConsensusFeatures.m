@@ -2,10 +2,10 @@ function [fIDs,FDR_qvals] = ConsensusFeatures(whatAnalysis,leftOrRight,whatFeatu
 % Search for features that are similarly discriminative across multiple time points
 %-------------------------------------------------------------------------------
 if nargin < 1
-    whatAnalysis = 'Excitatory_SHAM'; % Excitatory_SHAM, PVCre_SHAM, Excitatory_PVCre
+    whatAnalysis = 'Excitatory_PVCre'; % Excitatory_SHAM, PVCre_SHAM, Excitatory_PVCre
 end
 if nargin < 2
-    leftOrRight = 'control';
+    leftOrRight = 'right';
 end
 if nargin < 3
     whatFeatures = 'all';
@@ -85,58 +85,7 @@ for i = 1:N
 end
 
 %-------------------------------------------------------------------------------
-% Now we need to visualize specific features through time:
-% myFeatID = 313;
-% groupNames = theData{1}.groupNames;
-% opInd = [theData{1}.Operations.ID]==myFeatID;
-% redBlue = BF_getcmap('set1',3,1,0);
-% if numPoints==3
-%     isG1_1 = ([theData{1}.TimeSeries.Group]==1);
-%     isG2_1 = ([theData{1}.TimeSeries.Group]==2);
-%     isG1_2 = ([theData{2}.TimeSeries.Group]==1);
-%     isG2_2 = ([theData{2}.TimeSeries.Group]==2);
-%     isG1_3 = ([theData{3}.TimeSeries.Group]==1);
-%     isG2_3 = ([theData{3}.TimeSeries.Group]==2);
-%     f1 = theData{1}.TS_DataMat(isG1_1,opInd);
-%     f2 = theData{1}.TS_DataMat(isG2_1,opInd);
-%     f3 = theData{2}.TS_DataMat(isG1_2,opInd);
-%     f4 = theData{2}.TS_DataMat(isG2_2,opInd);
-%     f5 = theData{3}.TS_DataMat(isG1_3,opInd);
-%     f6 = theData{3}.TS_DataMat(isG2_3,opInd);
-%     extraParams = struct();
-%     extraParams.theColors = {redBlue{1};redBlue{2};...
-%                             brighten(redBlue{1},0.4);brighten(redBlue{2},0.4);...
-%                             brighten(redBlue{1},0.8);brighten(redBlue{2},0.8)};
-%     BF_JitteredParallelScatter({f1,f2,f3,f4,f5,f6},1,1,true,extraParams);
-%     ax = gca;
-%     ax.XTick = 1:6;
-%     ax.XTickLabel = {sprintf('Delta1_%s',groupNames{1}),...
-%                     sprintf('Delta1_%s',groupNames{2}),...
-%                     sprintf('Delta2_%s',groupNames{1}),...
-%                     sprintf('Delta2_%s',groupNames{2}),...
-%                     sprintf('Delta3_%s',groupNames{1}),...
-%                     sprintf('Delta3_%s',groupNames{2})};
-% else
-%     isG1_1 = ([theData{1}.TimeSeries.Group]==1);
-%     isG2_1 = ([theData{1}.TimeSeries.Group]==2);
-%     isG1_2 = ([theData{2}.TimeSeries.Group]==1);
-%     isG2_2 = ([theData{2}.TimeSeries.Group]==2);
-%     f1 = theData{1}.TS_DataMat(isG1_1,opInd);
-%     f2 = theData{1}.TS_DataMat(isG2_1,opInd);
-%     f3 = theData{2}.TS_DataMat(isG1_2,opInd);
-%     f4 = theData{2}.TS_DataMat(isG2_2,opInd);
-%     extraParams = struct();
-%     extraParams.theColors = {redBlue{1};redBlue{2};brighten(redBlue{1},0.4);brighten(redBlue{2},0.4)};
-%     BF_JitteredParallelScatter({f1,f2,f3,f4},1,1,true,extraParams);
-%     ax = gca;
-%     ax.XTick = 1:4;
-%     ax.XTickLabel = {sprintf('Delta1_%s',groupNames{1}),...
-%                     sprintf('Delta1_%s',groupNames{2}),...
-%                     sprintf('Delta2_%s',groupNames{1}),...
-%                     sprintf('Delta2_%s',groupNames{2})};
-% end
-% plot(ax.XLim,zeros(2,1),'--k')
-% ax.TickLabelInterpreter = 'none';
-% title(theData{1}.Operations(opInd).Name,'interpreter','none')
+% Plot one?:
+PlotConsensus(myOperations(ix(1)).ID,whatAnalysis,leftOrRight,whatFeatures)
 
 end

@@ -1,7 +1,12 @@
+function LowDimProj(whatAnalysis,leftOrRight)
 % Generate a low-dimensional projection of the data:
 
-leftOrRight = 'right';
-whatAnalysis = 'Excitatory_PVCre_SHAM'; % Excitatory_SHAM
+if nargin < 1
+    whatAnalysis = 'Excitatory_PVCre_SHAM'; % Excitatory_SHAM
+end
+if nargin < 2
+    leftOrRight = 'right';
+end
 
 %-------------------------------------------------------------------------------
 labelByMouse = false; % label by group rather than by mouse
@@ -55,3 +60,4 @@ fclose(fid);
 % annotateParams = struct('n',numAnnotate,'textAnnotation','none',...
 %                         'userInput',userSelects,'maxL',timeSeriesLength);
 % TS_plot_pca(normalizedData,true,'',annotateParams)
+end
