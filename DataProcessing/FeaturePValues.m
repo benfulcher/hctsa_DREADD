@@ -1,4 +1,4 @@
-function [pVals,FDR_qvals] = FeaturePValues(hctsaData,thresholdGood,doExact)
+function [pVals,FDR_qvals,testStat] = FeaturePValues(hctsaData,thresholdGood,doExact)
 % Compute p-value for each feature for group difference.
 %-------------------------------------------------------------------------------
 
@@ -24,20 +24,24 @@ end
 %-------------------------------------------------------------------------------
 isG1 = ([hctsaData.TimeSeries.Group]==1);
 isG2 = ([hctsaData.TimeSeries.Group]==2);
-pVals = zeros(numOps,1);
+pVals = nan(numOps,1);
+testStat = nan(numOps,1);
 parfor i = 1:numOps
     f1 = hctsaData.TS_DataMat(isG1,i);
     f2 = hctsaData.TS_DataMat(isG2,i);
     meanGood = [mean(isfinite(f1)),mean(isfinite(f2))];
     if all(meanGood > thresholdGood)
         if doExact
-            pVals(i) = ranksum(f1,f2,'method','exact');
+            [pVals(i),~,stats] = ranksum(f1,f2,'method','exact');
         else
-            pVals(i) = ranksum(f1,f2);
+            [pVals(i),~,stats] = ranksum(f1,f2);
         end
+        % Normalized Mann-Whitney U test (given the sample size may change across features)
+        n1 = length(f1);
+        n2 = length(f2);
+        testStat(i) = (stats.ranksum - n1*(n1+1)/2)/n1/n2; % normalized uStat
     else
         fprintf(1,'Too many bad values for %s\n',hctsaData.Operations(i).Name);
-        pVals(i) = NaN;
     end
 end
 FDR_qvals = mafdr(pVals,'BHFDR','true');

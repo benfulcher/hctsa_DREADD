@@ -1,4 +1,9 @@
+% Compare features that show differences in PVCre–SHAM to those who differ in
+% Excitatory_SHAM
+% Are they similar?
+%-------------------------------------------------------------------------------
 
+% Consensus version:
 leftOrRight = 'right';
 whatFeatures = 'all';
 
