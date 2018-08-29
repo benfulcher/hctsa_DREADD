@@ -4,7 +4,7 @@
 %-------------------------------------------------------------------------------
 
 % if nargin < 1
-    whatAnalysis = 'PVCre_SHAM'; % 'Excitatory_PVCre_SHAM', 'PVCre_SHAM'
+    whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_PVCre_SHAM', 'PVCre_SHAM'
 % end
 % if nargin < 2
     leftOrRight = 'right';
@@ -15,6 +15,9 @@
 % if nargin < 4
     theTimePoint = 'ts2-BL'; % 'ts2-BL' (POST1) 'all-BL' (all POST time points combined)
 % end
+
+thresholdGood = 0.6;
+doExact = true;
 
 %-------------------------------------------------------------------------------
 % Prepare data:
@@ -27,7 +30,6 @@ if strcmp(theTimePoint,'all-BL')
 else
     theData = dataTime;
 end
-fprintf(1,'Loading data from %s\n',theData);
 filteredData = LoadDataFile(theData,whatFeatures);
 
 %-------------------------------------------------------------------------------
@@ -43,8 +45,6 @@ filteredData = LoadDataFile(theData,whatFeatures);
 %             'whatPlots',{'histogram','distributions','cluster'},...
 %             'numNulls',numNulls);
 
-thresholdGood = 0.6;
-doExact = true;
 [pVals,FDR_qvals,testStat] = FeaturePValues(filteredData,thresholdGood,doExact);
 
 % Plot them:

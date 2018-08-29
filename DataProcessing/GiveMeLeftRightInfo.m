@@ -2,6 +2,9 @@ function [prePath,rawData,rawDataBL,dataTime,dataTimeNorm] = GiveMeLeftRightInfo
 % Get information on filenames of processed files
 %-------------------------------------------------------------------------------
 
+if nargin < 1
+    leftOrRight = 'right';
+end
 if nargin < 2
     whatAnalysis = 'Excitatory_SHAM';
 end
@@ -18,6 +21,8 @@ switch leftOrRight
         prePath = 'HCTSA_RightCTX';
     case 'control'
         prePath = 'HCTSA_Control';
+    otherwise
+        error('Unknown region ''%s''',leftOrRight);
 end
 
 %-------------------------------------------------------------------------------

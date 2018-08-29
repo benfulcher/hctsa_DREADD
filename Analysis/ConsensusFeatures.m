@@ -2,7 +2,7 @@ function [fIDs,FDR_qvals] = ConsensusFeatures(whatAnalysis,leftOrRight,whatFeatu
 % Search for features that are similarly discriminative across multiple time points
 %-------------------------------------------------------------------------------
 if nargin < 1
-    whatAnalysis = 'Excitatory_PVCre'; % Excitatory_SHAM, PVCre_SHAM, Excitatory_PVCre
+    whatAnalysis = 'Excitatory_PVCre'; % Excitatory_SHAM, PVCre_SHAM
 end
 if nargin < 2
     leftOrRight = 'right';

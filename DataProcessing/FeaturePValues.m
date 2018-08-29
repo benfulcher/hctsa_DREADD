@@ -50,7 +50,7 @@ FDR_qvals = mafdr(pVals,'BHFDR','true');
 % List out:
 isSig = (FDR_qvals < 0.05);
 numSig = sum(isSig);
-fprintf(1,'%u significant at 5%% FDR\n',numSig);
+fprintf(1,'%u/%u significant at 5%% FDR\n',numSig,sum(~isnan(pVals)));
 [~,ix] = sort(FDR_qvals,'ascend');
 N = max(20,numSig); % List at least 20, and if more, all significant (corrected)
 for i = 1:N

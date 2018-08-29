@@ -39,21 +39,35 @@ f = figure('color','w');
 for i = 1:numLabels
     AX(i,1).YLabel.String = labels{i};
     AX(numLabels,i).XLabel.String = labels{i};
-    for j = 1:i
+    for j = 1:numLabels
         if j<i
-            [r,p] = corr(testStatMat(:,[i,j]),'rows','pairwise','type','Spearman')
+            S(i,j).Color = 'k';
+            [r,p] = corr(testStatMat(:,[i,j]),'rows','pairwise','type','Spearman');
             text(AX(i,j),0.1,0.8,sprintf('r = %.2g',r(1,2)));
             text(AX(i,j),0.1,0.9,sprintf('p = %.2g',p(1,2)));
+        else
+            delete(AX(i,j));
         end
     end
 end
 for i = 1:numLabels
+    H(i).FaceColor = 'w';
+    H(i).EdgeColor = 'k';
+    HAx(i).XLim = [0,1];
+    if i==numLabels
+        HAx(i).XTick = [0,0.5,1];
+        HAx(i).XTickLabel = [0,0.5,1];
+        HAx(i).XLabel.String = labels{i};
+    end
     for j = 1:numLabels
-        AX(i,j).XLim = [0,1];
-        if i~=j
+        if j<i
+            AX(i,j).XLim = [0,1];
+            Ax(i,j).XTick = [0,0.5,1];
             AX(i,j).YLim = [0,1];
+            Ax(i,j).YTick = [0,0.5,1];
         end
     end
 end
+f.Position(3:4) = [750,680];
 
-% end
+end
