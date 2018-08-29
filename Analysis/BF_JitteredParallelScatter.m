@@ -126,7 +126,6 @@ if doveTail
         minKeep = max([1,find(x>=min(dataCell{i}),1,'first')]);
         maxKeep = min([length(x),find(x>=max(dataCell{i}),1,'first')]);
         keepR = minKeep:maxKeep;
-        % keepR = (x>=min(dataCell{i}) & x<=max(dataCell{i}));
         x = x(keepR);
         f = f(keepR);
         plot(customOffset+i+f*offsetRange/2,x,'-','color',theColors{i},'LineWidth',2)

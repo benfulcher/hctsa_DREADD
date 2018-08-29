@@ -1,13 +1,15 @@
-function [pVals,FDR_qvals,testStat] = FeaturePValues(hctsaData,thresholdGood,doExact)
+function [pVal,pValCorr,testStat] = FeaturePValues(hctsaData,thresholdGood,doExact,correctHow)
 % Compute p-value for each feature for group difference.
 %-------------------------------------------------------------------------------
-
 if nargin < 2
     thresholdGood = 0.6;
     % Both groups need at least this many finite values to compute a statistic
 end
 if nargin < 3
     doExact = true;
+end
+if nargin < 4
+    correctHow = 'FDR';
 end
 %-------------------------------------------------------------------------------
 
@@ -24,7 +26,7 @@ end
 %-------------------------------------------------------------------------------
 isG1 = ([hctsaData.TimeSeries.Group]==1);
 isG2 = ([hctsaData.TimeSeries.Group]==2);
-pVals = nan(numOps,1);
+pVal = nan(numOps,1);
 testStat = nan(numOps,1);
 parfor i = 1:numOps
     f1 = hctsaData.TS_DataMat(isG1,i);
@@ -32,9 +34,9 @@ parfor i = 1:numOps
     meanGood = [mean(isfinite(f1)),mean(isfinite(f2))];
     if all(meanGood > thresholdGood)
         if doExact
-            [pVals(i),~,stats] = ranksum(f1,f2,'method','exact');
+            [pVal(i),~,stats] = ranksum(f1,f2,'method','exact');
         else
-            [pVals(i),~,stats] = ranksum(f1,f2);
+            [pVal(i),~,stats] = ranksum(f1,f2);
         end
         % Normalized Mann-Whitney U test (given the sample size may change across features)
         n1 = length(f1);
@@ -44,20 +46,28 @@ parfor i = 1:numOps
         fprintf(1,'Too many bad values for %s\n',hctsaData.Operations(i).Name);
     end
 end
-FDR_qvals = mafdr(pVals,'BHFDR','true');
+
+%-------------------------------------------------------------------------------
+% Correct:
+switch correctHow
+case 'FDR'
+    pValCorr = mafdr(pVal,'BHFDR','true');
+case 'BonfHolm'
+    pValCorr = bonf_holm(pVal);
+end
 
 %-------------------------------------------------------------------------------
 % List out:
-isSig = (FDR_qvals < 0.05);
+isSig = (pValCorr < 0.05);
 numSig = sum(isSig);
-fprintf(1,'%u/%u significant at 5%% FDR\n',numSig,sum(~isnan(pVals)));
-[~,ix] = sort(FDR_qvals,'ascend');
-N = max(20,numSig); % List at least 20, and if more, all significant (corrected)
+fprintf(1,'%u/%u significant at 5%% FDR\n',numSig,sum(~isnan(pVal)));
+[~,ix] = sort(pVal,'ascend');
+N = max(150,numSig); % List at least 20, and if more, all significant (corrected)
 for i = 1:N
     ind = ix(i);
-    fprintf(1,'[%u]%s(%s): q = %.3g\n',hctsaData.Operations(ind).ID,...
+    fprintf(1,'[%u]%s(%s): p = %.3g, pcorr = %.3g\n',hctsaData.Operations(ind).ID,...
             hctsaData.Operations(ind).Name,hctsaData.Operations(ind).Keywords,...
-            FDR_qvals(ind));
+            pVal(ind),pValCorr(ind));
 end
 
 end

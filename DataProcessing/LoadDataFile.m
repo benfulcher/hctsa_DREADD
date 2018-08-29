@@ -10,9 +10,11 @@ loadedData = load(whatFile);
 
 switch whatFeatures
 case 'reduced'
-    dataStruct = FilterReducedSet(loadedData);
+    dataStruct = FilterReducedSet(loadedData,'clustered');
 case 'all'
     dataStruct = loadedData;
+case 'significant'
+    dataStruct = FilterReducedSet(loadedData,'significant');
 end
 
 % Throw NaNs into missing data:

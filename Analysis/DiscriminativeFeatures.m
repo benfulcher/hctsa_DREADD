@@ -1,20 +1,20 @@
-% function DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures,theTimePoint)
+function [fIDs,pVals,pValCorr] = DiscriminativeFeatures(whatAnalysis,leftOrRight,whatFeatures,theTimePoint)
 % What features are most discriminative between conditions in a given area
 % at a given time point
 %-------------------------------------------------------------------------------
 
-% if nargin < 1
+if nargin < 1
     whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_PVCre_SHAM', 'PVCre_SHAM'
-% end
-% if nargin < 2
+end
+if nargin < 2
     leftOrRight = 'right';
-% end
-% if nargin < 3
+end
+if nargin < 3
     whatFeatures = 'all';
-% end
-% if nargin < 4
+end
+if nargin < 4
     theTimePoint = 'ts2-BL'; % 'ts2-BL' (POST1) 'all-BL' (all POST time points combined)
-% end
+end
 
 thresholdGood = 0.6;
 doExact = true;
@@ -45,16 +45,18 @@ filteredData = LoadDataFile(theData,whatFeatures);
 %             'whatPlots',{'histogram','distributions','cluster'},...
 %             'numNulls',numNulls);
 
-[pVals,FDR_qvals,testStat] = FeaturePValues(filteredData,thresholdGood,doExact);
+correctHow = 'FDR';
+[pVals,pValCorr,testStat] = FeaturePValues(filteredData,thresholdGood,doExact,correctHow);
+fIDs = [filteredData.Operations.ID];
 
 % Plot them:
 f = figure('color','w');
-histogram(FDR_qvals)
+histogram(pValCorr)
 
 % List significant ones:
-isSig = (FDR_qvals < 0.05);
+isSig = (pValCorr < 0.05);
 numFeatures = sum(isSig);
-[~,ix] = sort(FDR_qvals,'ascend');
+[~,ix] = sort(pValCorr,'ascend');
 sigInd = ix(1:numFeatures);
 
 %-------------------------------------------------------------------------------
@@ -85,7 +87,7 @@ for i = 1:min(15,numFeatures)
     ax.XTick = 1:2;
     ax.XTickLabel = filteredData.groupNames;
     ax.XLim = [0.5,2.5];
-    title(sprintf('p = %.3g, p-corr = %.3g',pVals(opInd),FDR_qvals(opInd)),'interpreter','none')
+    title(sprintf('p = %.3g, p-corr = %.3g',pVals(opInd),pValCorr(opInd)),'interpreter','none')
 end
 
-% end
+end

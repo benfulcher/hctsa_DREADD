@@ -2,7 +2,7 @@ function testStatRelativeControl(leftOrRight,whatFeatures,doExact)
 % Do features that distinguish Excitatory from SHAM match those that distinguish
 % PVCre from SHAM?
 if nargin < 1
-    leftOrRight = 'left';
+    leftOrRight = 'right';
 end
 if nargin < 2
     whatFeatures = 'all';
@@ -74,6 +74,5 @@ xlabel('Excitatory: U(injected)-U(control)')
 ylabel('PVCre: U(injected)-U(control)')
 
 f.Position(3:4) = [950   400];
-keyboard
 
 end

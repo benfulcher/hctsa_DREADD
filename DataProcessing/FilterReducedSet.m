@@ -1,10 +1,19 @@
-function filteredData = FilterReducedSet(loadedData)
+function filteredData = FilterReducedSet(loadedData,whatReduction)
 
-% fileWithReducedIDs = 'clusterInfo_Spearman_rightCTX_02.mat';
-fileWithReducedIDs = 'clusterInfo_Spearman_rightCTX_ExcitatorySham_baselineSub_norm_02.mat';
-% fileWithReducedIDs = 'clusterInfo_Spearman_rightCTX_PVCre_SHAM_baselineSub_norm_02.mat';
-load(fullfile('Data',fileWithReducedIDs),'reducedIDs');
+if nargin < 2
+    whatReduction = 'clustered';
+end
 
+switch whatReduction
+case 'clustered'
+    % fileWithReducedIDs = 'clusterInfo_Spearman_rightCTX_02.mat';
+    fileWithReducedIDs = 'clusterInfo_Spearman_rightCTX_ExcitatorySham_baselineSub_norm_02.mat';
+    % fileWithReducedIDs = 'clusterInfo_Spearman_rightCTX_PVCre_SHAM_baselineSub_norm_02.mat';
+case 'significant'
+    fileWithReducedIDs = 'significantIDs.mat';
+end
+
+load(fileWithReducedIDs,'reducedIDs');
 filteredData = loadedData;
 keepMe = ismember([loadedData.Operations.ID],reducedIDs);
 
