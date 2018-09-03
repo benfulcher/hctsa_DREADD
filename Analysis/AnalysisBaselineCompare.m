@@ -1,6 +1,6 @@
 %-------------------------------------------------------------------------------
 % PARAMETERS:
-leftOrRight = 'control';
+leftOrRight = 'right';
 whatAnalysis = 'Excitatory_SHAM';
 labelByMouse = false; % do SHAM/DREADDs instead of labeling by mouse
 doCluster = true;
@@ -31,7 +31,7 @@ userSelects = true; % whether the user can click on time series to manually anno
 timeSeriesLength = 600; % length of time-series segments to annotate
 annotateParams = struct('n',numAnnotate,'textAnnotation','none',...
                         'userInput',userSelects,'maxL',timeSeriesLength);
-TS_plot_pca(normalizedData,true,'',annotateParams)
+TS_PlotLowDim(normalizedData,'pca',true,'',annotateParams)
 
 numFeatures = 40; % number of features to include in the pairwise correlation plot
 numFeaturesDistr = 32; % number of features to show class distributions for

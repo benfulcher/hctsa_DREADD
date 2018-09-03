@@ -62,11 +62,11 @@ notBad = ~isnan(pValsComb);
 fprintf(1,'%u features contained bad values\n',sum(~notBad));
 
 pValsComb = pValsComb(notBad);
-myOperations = theData{1}.Operations(notBad);
+myOperations = theData{1}.Operations(notBad,:);
 
 % Correct Fisher-combined p-values:
 FDR_qvals = mafdr(pValsComb,'BHFDR','true');
-fIDs = [myOperations.ID];
+fIDs = myOperations.ID;
 [~,ix] = sort(FDR_qvals,'ascend');
 
 %-------------------------------------------------------------------------------
@@ -79,13 +79,13 @@ N = max(20,numSig); % List at least 20, and if more, all significant (corrected)
 N = min(200,N);
 for i = 1:N
     ind = ix(i);
-    fprintf(1,'[%u]%s(%s): q = %.3g\n',myOperations(ind).ID,...
-            myOperations(ind).Name,myOperations(ind).Keywords,...
+    fprintf(1,'[%u]%s(%s): q = %.3g\n',myOperations.ID(ind),...
+            myOperations.Name{ind},myOperations.Keywords{ind},...
             FDR_qvals(ind));
 end
 
 %-------------------------------------------------------------------------------
 % Plot one?:
-PlotConsensus(myOperations(ix(1)).ID,whatAnalysis,leftOrRight,whatFeatures)
+PlotConsensus(myOperations.ID(ix(1)),whatAnalysis,leftOrRight)
 
 end

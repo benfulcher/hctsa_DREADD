@@ -14,7 +14,7 @@ end
 %-------------------------------------------------------------------------------
 
 % Output:
-numOps = length(hctsaData.Operations);
+numOps = height(hctsaData.Operations);
 if doExact
     fprintf(1,'Computing exact ranksum p-values across %u features\n',numOps);
 else
@@ -24,8 +24,8 @@ end
 %-------------------------------------------------------------------------------
 % Compute all ranksum p-values:
 %-------------------------------------------------------------------------------
-isG1 = ([hctsaData.TimeSeries.Group]==1);
-isG2 = ([hctsaData.TimeSeries.Group]==2);
+isG1 = (hctsaData.TimeSeries.Group==1);
+isG2 = (hctsaData.TimeSeries.Group==2);
 pVal = nan(numOps,1);
 testStat = nan(numOps,1);
 parfor i = 1:numOps
@@ -43,7 +43,7 @@ parfor i = 1:numOps
         n2 = length(f2);
         testStat(i) = (stats.ranksum - n1*(n1+1)/2)/n1/n2; % normalized uStat
     else
-        fprintf(1,'Too many bad values for %s\n',hctsaData.Operations(i).Name);
+        fprintf(1,'Too many bad values for %s\n',hctsaData.Operations.Name{i});
     end
 end
 
@@ -65,8 +65,8 @@ fprintf(1,'%u/%u significant at 5%% FDR\n',numSig,sum(~isnan(pVal)));
 N = max(150,numSig); % List at least 20, and if more, all significant (corrected)
 for i = 1:N
     ind = ix(i);
-    fprintf(1,'[%u]%s(%s): p = %.3g, pcorr = %.3g\n',hctsaData.Operations(ind).ID,...
-            hctsaData.Operations(ind).Name,hctsaData.Operations(ind).Keywords,...
+    fprintf(1,'[%u]%s(%s): p = %.3g, pcorr = %.3g\n',hctsaData.Operations.ID(ind),...
+            hctsaData.Operations.Name{ind},hctsaData.Operations.Keywords{ind},...
             pVal(ind),pValCorr(ind));
 end
 

@@ -61,14 +61,14 @@ sigInd = ix(1:numFeatures);
 
 %-------------------------------------------------------------------------------
 % Plot some top ones:
-sigFeatures = [filteredData.Operations(sigInd).ID];
-isG1 = ([filteredData.TimeSeries.Group]==1);
-isG2 = ([filteredData.TimeSeries.Group]==2);
+sigFeatures = filteredData.Operations.ID(sigInd);
+isG1 = (filteredData.TimeSeries.Group==1);
+isG2 = (filteredData.TimeSeries.Group==2);
 means = zeros(numFeatures,2);
 stds = zeros(numFeatures,2);
 f = figure('color','w');
 for i = 1:min(15,numFeatures)
-    opInd = [filteredData.Operations.ID]==sigFeatures(i);
+    opInd = filteredData.Operations.ID==sigFeatures(i);
     f1 = filteredData.TS_DataMat(isG1,opInd);
     f2 = filteredData.TS_DataMat(isG2,opInd);
     means(i,1) = mean(f1);
@@ -83,7 +83,7 @@ for i = 1:min(15,numFeatures)
     plot(ones(2,1)*1,means(i,1)+[-stds(i,1),stds(i,1)],'-k');
     plot(ones(2,1)*2,means(i,2)+[-stds(i,2),stds(i,2)],'-k');
     xlabel('Groups')
-    ylabel(sprintf('[%u]%s',filteredData.Operations(opInd).ID,filteredData.Operations(opInd).Name))
+    ylabel(sprintf('[%u]%s',filteredData.Operations.ID(opInd),filteredData.Operations.Name{opInd}))
     ax.XTick = 1:2;
     ax.XTickLabel = filteredData.groupNames;
     ax.XLim = [0.5,2.5];

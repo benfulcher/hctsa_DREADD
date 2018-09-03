@@ -70,12 +70,13 @@ FirstTimePointClassification('Excitatory_SHAM','reduced','ts2-BL',100)
 
 ### Which features are discriminatory
 
-This code characterizes specific excitatory-sham differences in the injected region at Delta.1, using a reduced feature set:
+E.g., characterize specific excitatory-sham differences in the injected region at Delta.1, using a reduced feature set:
 ```matlab
 DiscriminativeFeatures('Excitatory_SHAM','right','reduced','ts2-BL')
 ```
 
-This code assumes each measured time point is independent (which turns out to be a bad assumption), and looks for features that show consistent differences to SHAM across time:
+This code assumes each measured time point is independent and looks for features that show consistent differences to SHAM across time.
+Note that this assumption turns out to be very bad, so p-values obtained from this method are overly optimistic:
 
 ```matlab
 ConsensusFeatures('Excitatory_SHAM','right','all')

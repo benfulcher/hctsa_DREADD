@@ -59,5 +59,6 @@ fclose(fid);
 % timeSeriesLength = 600; % length of time-series segments to annotate
 % annotateParams = struct('n',numAnnotate,'textAnnotation','none',...
 %                         'userInput',userSelects,'maxL',timeSeriesLength);
-% TS_plot_pca(normalizedData,true,'',annotateParams)
+% TS_PlotLowDim(normalizedData,'pca',true,'',annotateParams)
+
 end

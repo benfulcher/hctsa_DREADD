@@ -38,12 +38,12 @@ extraParams = struct();
 extraParams.customSpot = '';
 f = figure('color','w');
 if numPoints==3
-    isG1_1 = ([theData{1}.TimeSeries.Group]==1);
-    isG2_1 = ([theData{1}.TimeSeries.Group]==2);
-    isG1_2 = ([theData{2}.TimeSeries.Group]==1);
-    isG2_2 = ([theData{2}.TimeSeries.Group]==2);
-    isG1_3 = ([theData{3}.TimeSeries.Group]==1);
-    isG2_3 = ([theData{3}.TimeSeries.Group]==2);
+    isG1_1 = (theData{1}.TimeSeries.Group==1);
+    isG2_1 = (theData{1}.TimeSeries.Group==2);
+    isG1_2 = (theData{2}.TimeSeries.Group==1);
+    isG2_2 = (theData{2}.TimeSeries.Group==2);
+    isG1_3 = (theData{3}.TimeSeries.Group==1);
+    isG2_3 = (theData{3}.TimeSeries.Group==2);
     if numGroups==2
         f1 = theData{1}.TS_DataMat(isG1_1,opInd);
         f2 = theData{1}.TS_DataMat(isG2_1,opInd);
@@ -64,8 +64,8 @@ if numPoints==3
                         sprintf('Delta3_%s',groupNames{1}),...
                         sprintf('Delta3_%s',groupNames{2})};
     else
-        isG3_1 = ([theData{1}.TimeSeries.Group]==3);
-        isG3_2 = ([theData{2}.TimeSeries.Group]==3);
+        isG3_1 = (theData{1}.TimeSeries.Group==3);
+        isG3_2 = (theData{2}.TimeSeries.Group==3);
         f1 = theData{1}.TS_DataMat(isG1_1,opInd);
         f2 = theData{1}.TS_DataMat(isG2_1,opInd);
         f3 = theData{1}.TS_DataMat(isG3_1,opInd);
@@ -90,10 +90,10 @@ if numPoints==3
                         sprintf('Delta3_%s',groupNames{2})};
     end
 else
-    isG1_1 = ([theData{1}.TimeSeries.Group]==1);
-    isG2_1 = ([theData{1}.TimeSeries.Group]==2);
-    isG1_2 = ([theData{2}.TimeSeries.Group]==1);
-    isG2_2 = ([theData{2}.TimeSeries.Group]==2);
+    isG1_1 = (theData{1}.TimeSeries.Group==1);
+    isG2_1 = (theData{1}.TimeSeries.Group==2);
+    isG1_2 = (theData{2}.TimeSeries.Group==1);
+    isG2_2 = (theData{2}.TimeSeries.Group==2);
     f1 = theData{1}.TS_DataMat(isG1_1,opInd);
     f2 = theData{1}.TS_DataMat(isG2_1,opInd);
     f3 = theData{2}.TS_DataMat(isG1_2,opInd);
@@ -103,8 +103,8 @@ else
         extraParams.theColors = {redBlue{1};redBlue{2};brighten(redBlue{1},0.3);brighten(redBlue{2},0.3)};
         BF_JitteredParallelScatter({f1,f2,f3,f4},1,1,false,extraParams);
     else
-        isG3_1 = ([theData{1}.TimeSeries.Group]==3);
-        isG3_2 = ([theData{2}.TimeSeries.Group]==3);
+        isG3_1 = (theData{1}.TimeSeries.Group==3);
+        isG3_2 = (theData{2}.TimeSeries.Group==3);
         f5 = theData{1}.TS_DataMat(isG3_1,opInd);
         f6 = theData{2}.TS_DataMat(isG3_2,opInd);
         extraParams.theColors = {redBlue{1};redBlue{3};redBlue{2};...
@@ -130,7 +130,7 @@ else
 end
 plot(ax.XLim,zeros(2,1),'--k')
 ax.TickLabelInterpreter = 'none';
-title(theData{1}.Operations(opInd).Name,'interpreter','none')
+title(theData{1}.Operations.Name{opInd},'interpreter','none')
 f.Position(3:4) = [520,210];
 
 end

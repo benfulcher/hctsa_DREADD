@@ -15,9 +15,9 @@ end
 
 load(fileWithReducedIDs,'reducedIDs');
 filteredData = loadedData;
-keepMe = ismember([loadedData.Operations.ID],reducedIDs);
+keepMe = ismember(loadedData.Operations.ID,reducedIDs);
 
-filteredData.Operations = loadedData.Operations(keepMe);
+filteredData.Operations = loadedData.Operations(keepMe,:);
 filteredData.TS_DataMat = loadedData.TS_DataMat(:,keepMe);
 filteredData.TS_Quality = loadedData.TS_Quality(:,keepMe);
 

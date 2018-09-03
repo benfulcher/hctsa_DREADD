@@ -6,7 +6,10 @@ if nargin < 2
 end
 
 fprintf(1,'Loading data from %s\n',whatFile);
-loadedData = load(whatFile);
+[~,TimeSeries,Operations,whatDataFile] = TS_LoadData(whatFile);
+loadedData = load(whatDataFile);
+loadedData.TimeSeries = TimeSeries;
+loadedData.Operations = Operations;
 
 switch whatFeatures
 case 'reduced'
