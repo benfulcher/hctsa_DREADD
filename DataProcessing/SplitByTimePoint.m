@@ -21,7 +21,7 @@ if doBL
 else
     tsCell = {'ts1','ts2','ts3','ts4'};
 end
-if strcmp(whatAnalysis,'PVCre_SHAM')
+if ismember(whatAnalysis,{'PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM','PVCre_Wild'})
     tsCell = tsCell(1:end-1); % (for this data we only have three time points)
 end
 numTimePoints = length(tsCell);
