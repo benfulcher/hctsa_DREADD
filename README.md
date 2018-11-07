@@ -61,11 +61,22 @@ ProduceReducedFeatures()
 
 ## Data analysis
 
+A range of different analysis types in terms of labeling of classes of data:
+
+* `Excitatory_SHAM`
+* `PVCre_SHAM`
+* `Wild_SHAM`
+* `Excitatory_PVCre`
+* `PVCre_Wild`
+* `Excitatory_Wild`
+* `Excitatory_PVCre_SHAM`
+* `Excitatory_PVCre_Wild_SHAM`
+
 ### How different are dynamics at a given time point
 
-This uses 100 nulls (for speed) to compute the difference between excitatory and sham conditions at Delta.1 (`'ts2-BL'`) in each of the three regions of interest:
+This uses 100 nulls (for speed) to compute the difference between excitatory and sham conditions at Delta.1 (`'ts2-BL'`) in each of the three regions of interest (using all features):
 ```matlab
-FirstTimePointClassification('Excitatory_SHAM','reduced','ts2-BL',100)
+FirstTimePointClassification('Excitatory_SHAM','all','ts2-BL',100)
 ```
 
 ### Which features are discriminatory

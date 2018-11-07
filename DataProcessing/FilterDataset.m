@@ -63,6 +63,21 @@ for k = 1:numRegions
         TS_FilterData(rawData,ts_keepIDs,[],T13File);
         % Combine all three experimental data together:
         TS_combine(T13File,fullfile(prePath,'HCTSA_PVCre.mat'),false,false,fullfile(prePath,'HCTSA_Exc_PVCre_SHAM.mat'),true);
+    case 'Excitatory_PVCre_Wild_SHAM'
+        % Exclude ts4 from excitatory data:
+        [~,ts_keepIDs] = TS_getIDs('ts4',rawData,'ts');
+        T13File = fullfile(prePath,'HCTSA_T13.mat');
+        TS_FilterData(rawData,ts_keepIDs,[],T13File);
+        % Exclude ts4 from wildInhib data:
+        wildInhibData = fullfile(prePath,'HCTSA_wildInhib.mat');
+        [~,ts_keepIDs] = TS_getIDs('ts4',wildInhibData,'ts');
+        wildInhib_ts13 = fullfile(prePath,'HCTSA_wildInhib_ts13.mat');
+        TS_FilterData(wildInhibData,ts_keepIDs,[],wildInhib_ts13);
+        % Combine all three experimental data together:
+        intermediateFile = fullfile(prePath,'HCTSA_Exc_Wild_SHAM_t13.mat');
+        TS_combine(T13File,wildInhib_ts13,false,false,intermediateFile,true);
+        % Now add PVCre:
+        TS_combine(intermediateFile,fullfile(prePath,'HCTSA_PVCre.mat'),false,false,fullfile(prePath,'HCTSA_Exc_PVCre_Wild_SHAM.mat'),true);
     end
 end
 

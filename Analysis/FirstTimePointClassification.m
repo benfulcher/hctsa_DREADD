@@ -68,9 +68,14 @@ end
 
 %-------------------------------------------------------------------------------
 % Plot:
-f = figure('color','w'); ax = gca; hold on
+f = figure('color','w');
+ax = gca; hold('on')
+% Real:
 errorbar(meanAcc(:,1),stdAcc(:,1),'ok','LineWidth',2)
-errorbar(meanAcc(:,2),stdAcc(:,2),'o--','color',ones(1,3)*0.5)
+% Null:
+plot(1:3,meanAcc(:,2),'--','color',ones(1,3)*0.5)
+plot(1:3,meanAcc(:,2)+stdAcc(:,2),':','color',ones(1,3)*0.5)
+plot(1:3,meanAcc(:,2)-stdAcc(:,2),':','color',ones(1,3)*0.5)
 ax.XTick = 1:numRegions;
 ax.XTickLabel = regionLabels;
 ylabel('Balanced classification accuracy (%)');
@@ -78,5 +83,8 @@ xlabel('Brain region');
 xlim([0.9,3.1])
 title(sprintf('%s: %u-fold, %u repeats, %u nulls',whatAnalysis,numFolds,numRepeats,numNulls),...
                                 'interpreter','none')
+f.Position = [1000,1158,219,180];
+ax.YLim = [30,90];
+saveas(f,sprintf('ClassificationFigure_%s.svg',whatAnalysis),'svg');
 
 end

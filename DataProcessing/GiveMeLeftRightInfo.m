@@ -64,6 +64,11 @@ case 'Excitatory_PVCre_SHAM'
     rawDataBL = fullfile(prePath,'HCTSA_Exc_PVCre_SHAM_baselineSub.mat');
     dataTime = fullfile(prePath,sprintf('HCTSA_Exc_PVCre_SHAM_%s.mat',whatTimePoint));
     dataTimeNorm = fullfile(prePath,sprintf('HCTSA_Exc_PVCre_SHAM_%s_N.mat',whatTimePoint));
+case 'Excitatory_PVCre_Wild_SHAM'
+    rawData = fullfile(prePath,'HCTSA_Exc_PVCre_Wild_SHAM.mat');
+    rawDataBL = fullfile(prePath,'HCTSA_Exc_PVCre_Wild_SHAM_baselineSub.mat');
+    dataTime = fullfile(prePath,sprintf('HCTSA_Exc_PVCre_Wild_SHAM_%s.mat',whatTimePoint));
+    dataTimeNorm = fullfile(prePath,sprintf('HCTSA_Exc_PVCre_Wild_SHAM_%s_N.mat',whatTimePoint));
 otherwise
     error('Unknown analysis: %s',whatAnalysis);
 end

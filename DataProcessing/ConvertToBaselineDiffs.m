@@ -16,7 +16,7 @@ end
 switch whatAnalysis
 case {'Excitatory_SHAM','Wild_SHAM','Excitatory_Wild'}
     threeOrFour = 4; % there are four time points
-case {'PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM','PVCre_Wild'}
+case {'PVCre_SHAM','Excitatory_PVCre','Excitatory_PVCre_SHAM','PVCre_Wild','Excitatory_PVCre_Wild_SHAM'}
     % PVCre data doesn't contain information about the fourth time point...
     threeOrFour = 3;
 end
