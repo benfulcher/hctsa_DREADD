@@ -49,15 +49,15 @@ correctHow = 'FDR';
 [pVals,pValCorr,testStat] = FeaturePValues(filteredData,thresholdGood,doExact,correctHow);
 fIDs = [filteredData.Operations.ID];
 
-% Plot them:
-f = figure('color','w');
-histogram(pValCorr)
-
-% List significant ones:
+% Mark significant features:
 isSig = (pValCorr < 0.05);
 numFeatures = sum(isSig);
 [~,ix] = sort(pValCorr,'ascend');
 sigInd = ix(1:numFeatures);
+
+% Plot them:
+f = figure('color','w');
+histogram(pValCorr)
 
 %-------------------------------------------------------------------------------
 % Plot some top ones:
@@ -89,5 +89,18 @@ for i = 1:min(15,numFeatures)
     ax.XLim = [0.5,2.5];
     title(sprintf('p = %.3g, p-corr = %.3g',pVals(opInd),pValCorr(opInd)),'interpreter','none')
 end
+
+%-------------------------------------------------------------------------------
+% Produce a proper table output to file:
+fid = fopen('sigFeatures.txt','w');
+fprintf(fid,'featureID | featureName | featureKeywords | pValue | pValueCorr\n');
+sigInd = ix(1:numFeatures);
+for i = 1:numFeatures
+    ind = sigInd(i);
+    fprintf(fid,'%u | %s | %s | %.3g | %.3g\n',hctsaData.Operations.ID(ind),...
+            hctsaData.Operations.Name{ind},hctsaData.Operations.Keywords{ind},...
+            pVals(ind),pValCorr(ind));
+end
+fclose(fid);
 
 end
