@@ -47,7 +47,7 @@ filteredData = LoadDataFile(theData,whatFeatures);
 
 correctHow = 'FDR';
 [pVals,pValCorr,testStat] = FeaturePValues(filteredData,thresholdGood,doExact,correctHow);
-fIDs = [filteredData.Operations.ID];
+fIDs = filteredData.Operations.ID;
 
 % Mark significant features:
 isSig = (pValCorr < 0.05);

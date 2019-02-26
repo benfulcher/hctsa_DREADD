@@ -13,6 +13,10 @@ if nargin < 4
 end
 %-------------------------------------------------------------------------------
 
+if ischar(hctsaData)
+    hctsaData = load(hctsaData);
+end
+
 % Output:
 numOps = height(hctsaData.Operations);
 if doExact

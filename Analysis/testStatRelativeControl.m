@@ -1,6 +1,7 @@
 function testStatRelativeControl(leftOrRight,whatFeatures,doExact)
 % Do features that distinguish Excitatory from SHAM match those that distinguish
 % PVCre from SHAM?
+%-------------------------------------------------------------------------------
 
 if nargin < 1
     leftOrRight = 'right';
