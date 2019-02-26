@@ -1,4 +1,4 @@
-function DoAllProcessing()
+% function DoAllProcessing()
 % Apply all data processing for analysis using already-computed HCTSA files
 
 %-------------------------------------------------------------------------------
@@ -70,4 +70,4 @@ for j = 1:numAnalyses
     SplitByTimePoint(theAnalysis,true,whatNormalizationBaseline)
 end
 
-end
+% end
