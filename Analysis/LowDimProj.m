@@ -62,10 +62,10 @@ fclose(fid);
 
 %-------------------------------------------------------------------------------
 %% Generate a low-dimensional principal components representation of the dataset:
-numAnnotate = 3; % number of time series to annotate to the plot
+numAnnotate = 6; % number of time series to annotate to the plot
 userSelects = true; % whether the user can click on time series to manually annotate
 timeSeriesLength = 600; % length of time-series segments to annotate
-annotateParams = struct('n',numAnnotate,'textAnnotation','none',...
+annotateParams = struct('n',numAnnotate,'textAnnotation','Name',...
                         'userInput',userSelects,'maxL',timeSeriesLength);
 TS_PlotLowDim(normDataBL,'pca',true,'',annotateParams);
 
