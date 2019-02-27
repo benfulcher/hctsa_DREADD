@@ -1,13 +1,12 @@
 % Investigating insula data
 %-------------------------------------------------------------------------------
 
-theData = fullfile('HCTSA_Insula','HCTSA.mat');
-
 %-------------------------------------------------------------------------------
 % Relabel:
-TS_LabelGroups(theData,{'wtFMR','koFMR'},true,true);
+% theData = fullfile('HCTSA_Insula_v2','HCTSA.mat');
+% TS_LabelGroups(theData,{'wtFMR','koFMR'},true,true);
 % -> HCTSA_FMR.mat
-TS_LabelGroups(theData,{'wtCNT','koCNT'},true,true);
+% TS_LabelGroups(theData,{'wtCNT','koCNT'},true,true);
 % -> HCTSA_CNT.mat
 
 %-------------------------------------------------------------------------------
@@ -15,21 +14,22 @@ TS_LabelGroups(theData,{'wtCNT','koCNT'},true,true);
 FMRorCNT = 'FMR';
 switch FMRorCNT
 case 'FMR'
-    filteredData = fullfile('HCTSA_Insula','HCTSA_FMR.mat');
+    filteredData = fullfile('HCTSA_Insula_v2','HCTSA_FMR.mat');
 case 'CNT'
-    filteredData = fullfile('HCTSA_Insula','HCTSA_CNT.mat');
+    filteredData = fullfile('HCTSA_Insula_v2','HCTSA_CNT.mat');
 end
+TS_LabelGroups(filteredData,{'wildType','knockOut'},true);
 
 % Normalize:
-filteredData = load(filteredData);
 normalizedData = TS_normalize('scaledRobustSigmoid',[0.5,1],filteredData,true);
+filteredData = load(filteredData);
 
 %===============================================================================
 %===============================================================================
 
 %-------------------------------------------------------------------------------
 % Classify?:
-TS_classify(hctsaData,'svm_linear','numPCs',0,'numNulls',200,...
+TS_classify(normalizedData,'svm_linear','numPCs',0,'numNulls',200,...
                     'numFolds',2,'numRepeats',10,'seedReset','none');
 
 %-------------------------------------------------------------------------------
