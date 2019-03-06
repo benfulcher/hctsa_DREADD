@@ -6,18 +6,8 @@ numRepeats = 10;
 nullsPerRegion = 5;
 
 %-------------------------------------------------------------------------------
-% Break up by region:
-dataCore = fullfile('HCTSA_FMR1','HCTSA.mat');
-theKeywords = TS_WhatKeywords(dataCore)';
-isRegionRelated = cellfun(@(x)~isempty(x),regexp(theKeywords,'reg'));
-regionKeywords = theKeywords(isRegionRelated);
+[regionKeywords,regionName,whatHemisphere] = GiveMeFMR1Info();
 numRegions = length(regionKeywords);
-
-%-------------------------------------------------------------------------------
-% Map region IDs to region names:
-[~,~,ROI_info] = xlsread('NEW_CORTICAL_FMR1.xlsx','ROI_Names');
-regionName = cellfun(@(x)ROI_info{str2num(x(4:end)),1},regionKeywords,'UniformOutput',false);
-whatHemisphere = categorical(cellfun(@(x)ROI_info{str2num(x(4:end)),2},regionKeywords,'UniformOutput',false));
 
 %-------------------------------------------------------------------------------
 % Classify each region based on labels:
@@ -25,9 +15,8 @@ foldLosses = cell(numRegions,1);
 nullStat = cell(numRegions,1);
 for i = 1:numRegions
     thisReg = regionKeywords{i};
-    thisRegID = str2num(thisReg(4:end));
-    fprintf(1,'-----Region %u/%u---%s (%u): %s (%s)-----\n',i,numRegions,...
-                thisReg,thisRegID,ROI_info{thisRegID,1},ROI_info{thisRegID,2});
+    fprintf(1,'-----Region %u/%u---%s: %s (%s)-----\n',i,numRegions,...
+                thisReg,regionName{i},char(whatHemisphere{i}));
     normalizedData = fullfile('HCTSA_FMR1',sprintf('HCTSA_%s_N.mat',thisReg));
     [foldLosses{i},nullStat{i}] = TS_classify(normalizedData,'svm_linear',...
                                     'numNulls',nullsPerRegion,...
@@ -57,7 +46,6 @@ stdBalAccLeft = cellfun(@std,foldLossesLeftSorted);
 meanBalAccBoth = (meanBalAccRight+meanBalAccLeft)/2;
 
 [~,ix] = sort(meanBalAccBoth,'ascend');
-
 
 f = figure('color','w');
 colors = BF_getcmap('set2',3,0,0);

@@ -5,7 +5,7 @@ if nargin < 1
     whatAnalysis = 'Excitatory_SHAM'; % 'Excitatory_SHAM','PVCre_SHAM', 'Excitatory_PVCre'
 end
 if nargin < 2
-    whatFeatures = 'reduced'; % 'reduced', 'all'
+    whatFeatures = 'all'; % 'reduced', 'all'
 end
 if nargin < 3
     theTimePoint = 'ts2-BL'; % First time point (subtracting baseline)
