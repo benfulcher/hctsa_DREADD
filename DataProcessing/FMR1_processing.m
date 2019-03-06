@@ -1,31 +1,27 @@
-% Analysis of FMR1 data
+% Split by region, label by AWT/KO, and normalize/filter features
+%-------------------------------------------------------------------------------
 
 %-------------------------------------------------------------------------------
-% Processing text files:
-files = dir;
-files = files(~[files.isdir]);
-fileNames = {files.name}';
-numFiles = length(fileNames);
+% Parameters:
+normFunction = 'scaledRobustSigmoid';
+filterParams = [0.70,1];
 
-%
-numRegions = 46;
-numTS = numFiles*numRegions;
+%-------------------------------------------------------------------------------
+% Break up by region:
+dataCore = fullfile('HCTSA_FMR1','HCTSA.mat');
+theKeywords = TS_WhatKeywords(dataCore)';
+isRegionRelated = cellfun(@(x)~isempty(x),regexp(theKeywords,'reg'));
+regionKeywords = theKeywords(isRegionRelated);
+numRegions = length(regionKeywords);
 
-% Initialize:
-timeSeriesData = cell(numTS,1);
-labels = cell(numTS,1);
-keywords = cell(numTS,1);
-
-index = 1;
-for i = 1:numFiles
-    theFile = fileNames{i};
-    fileNameSplit = regexp(theFile,'_','split');
-    theData = dlmread(theFile);
-    for j = 1:numRegions
-        timeSeriesData{index} = theData(:,j);
-        labels{index} = sprintf('%s_reg%u',theFile(1:end-4),j);
-        keywords{index} = sprintf('%s,mouse%s,reg%u',fileNameSplit{1},fileNameSplit{2},j);
-        index = index + 1;
-    end
+for i = 1:numRegions
+    thisReg = regionKeywords{i};
+    % Filter data to include just this region:
+    IDs_here = TS_getIDs(thisReg,dataCore,'ts');
+    filteredFilename = fullfile('HCTSA_FMR1',sprintf('HCTSA_%s.mat',thisReg));
+    TS_FilterData(dataCore,IDs_here,[],filteredFilename);
+    % Label groups:
+    TS_LabelGroups(filteredFilename,{'AWT','KO'});
+    % Normalize:
+    TS_Normalize(normFunction,filterParams,filteredFilename,true);
 end
-save('INP_test.mat','timeSeriesData','labels','keywords');
