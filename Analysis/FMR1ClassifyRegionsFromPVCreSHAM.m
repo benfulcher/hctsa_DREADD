@@ -42,7 +42,7 @@ for i = 1:numRegions
         yRealPerm = yReal(randperm(length(yReal)));
         nullAccHere(j) = BF_lossFunction(yRealPerm,yPredict,whatLoss,2);
     end
-    pValPermTest(i) = mean(nullAccHere > balAcc(i));
+    pValPermTest(i) = mean(nullAccHere >= balAcc(i));
     pValZ(i) = 1 - normcdf(balAcc(i),mean(nullAccHere),std(nullAccHere));
     nullAcc{i} = nullAccHere;
 
@@ -51,12 +51,38 @@ for i = 1:numRegions
 end
 
 %-------------------------------------------------------------------------------
+% Structure:
+balAccRight = balAcc(whatHemisphere=='right');
+balAccLeft = balAcc(whatHemisphere=='left');
+pValZRight = pValZ(whatHemisphere=='right');
+pValZLeft = pValZ(whatHemisphere=='left');
+pValPermRight = pValPermTest(whatHemisphere=='right');
+pValPermLeft = pValPermTest(whatHemisphere=='left');
+regionNamesRight = regionName(whatHemisphere=='right');
+regionNamesLeft = regionName(whatHemisphere=='left');
+% Map both to specified region ordering:
+uniqueRegions = unique(regionName);
+[~,~,ib] = intersect(uniqueRegions,regionNamesRight,'stable');
+balAccRightSorted = balAccRight(ib);
+pValZRightSorted = pValZRight(ib);
+pValPermRightSorted = pValPermRight(ib);
+[~,~,ib] = intersect(uniqueRegions,regionNamesLeft,'stable');
+balAccLeftSorted = balAccLeft(ib);
+pValZLeftSorted = pValZLeft(ib);
+pValPermLeftSorted = pValPermLeft(ib);
+% Mean left/right:
+balAccBoth = (balAccRightSorted+balAccLeftSorted)/2;
+[~,ix] = sort(balAccBoth,'ascend');
+
+%-------------------------------------------------------------------------------
 % Export data to csv:
 dataFileOut = 'crossPredictionAccuracyP.csv';
 fid = fopen(dataFileOut,'w');
-fprintf(fid,'RegionName,\tregionHemisphere,\tbalancedAccuracy(%),\tpPerm,\tpZ\n')
-for i = 1:numRegions
-    fprintf(fid,'%s,\t%s,\t%g,\t%g,\t%g\n',regionName{i},whatHemisphere(i),balAcc(i),pValPermTest(i),pValZ(i));
+fprintf(fid,'RegionName,\tregionHemisphere,\tbalancedAccuracy(%%),\tpPerm,\tpZ\n');
+for i = 1:numRegions/2
+    ind = ix(i);
+    fprintf(fid,'%s,\t%s,\t%g,\t%g,\t%g\n',uniqueRegions{ind},'right',balAccRightSorted(ind),pValPermRightSorted(ind),pValZRightSorted(ind));
+    fprintf(fid,'%s,\t%s,\t%g,\t%g,\t%g\n',uniqueRegions{ind},'left',balAccLeftSorted(ind),pValPermLeftSorted(ind),pValZLeftSorted(ind));
 end
 fclose(fid);
 
@@ -65,26 +91,8 @@ nullStatPooled = vertcat(nullAcc{:});
 
 %-------------------------------------------------------------------------------
 % Plot them:
-balAccRight = balAcc(whatHemisphere=='right');
-balAccLeft = balAcc(whatHemisphere=='left');
-pValZRight = pValZ(whatHemisphere=='right');
-pValZLeft = pValZ(whatHemisphere=='left');
-regionNamesRight = regionName(whatHemisphere=='right');
-regionNamesLeft = regionName(whatHemisphere=='left');
-
-% Map both to specified region ordering:
-uniqueRegions = unique(regionName);
-[~,~,ib] = intersect(uniqueRegions,regionNamesRight,'stable');
-balAccRightSorted = balAccRight(ib);
-pValZRightSorted = pValZRight(ib);
-[~,~,ib] = intersect(uniqueRegions,regionNamesLeft,'stable');
-balAccLeftSorted = balAccLeft(ib);
-pValZLeftSorted = pValZLeft(ib);
-
-balAccBoth = (balAccRightSorted+balAccLeftSorted)/2;
 pValZMean = (pValZRightSorted+pValZLeftSorted)/2;
 
-[~,ix] = sort(balAccBoth,'ascend');
 balAccRightSorted_ix = balAccRightSorted(ix);
 isSigRight_ix = (pValZRightSorted(ix) < 0.01);
 balAccLeftSorted_ix = balAccLeftSorted(ix);

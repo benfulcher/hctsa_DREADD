@@ -5,3 +5,6 @@ HCTSA*.mat
 *.nii
 *.mat
 *.txt
+*.svg
+*.csv
+*.xlsx
