@@ -1,5 +1,5 @@
 
-numNullsPerRegion = 500;
+numNullsPerRegion = 5e6;
 
 %-------------------------------------------------------------------------------
 % Get trained model from PVCre-SHAM
@@ -21,6 +21,7 @@ numRegions = length(regionKeywords);
 balAcc = zeros(numRegions,1);
 nullAcc = cell(numRegions,1);
 pValZ = zeros(numRegions,1);
+pValPermTest = zeros(numRegions,1);
 for i = 1:numRegions
     thisReg = regionKeywords{i};
     normalizedData = fullfile('HCTSA_FMR1',sprintf('HCTSA_%s_N.mat',thisReg));
@@ -37,16 +38,27 @@ for i = 1:numRegions
     balAcc(i) = BF_lossFunction(yReal,yPredict,whatLoss,2);
 
     nullAccHere = zeros(numNullsPerRegion,1);
-    for j = 1:numNullsPerRegion
+    parfor j = 1:numNullsPerRegion
         yRealPerm = yReal(randperm(length(yReal)));
         nullAccHere(j) = BF_lossFunction(yRealPerm,yPredict,whatLoss,2);
     end
-    pValPermTest = mean(nullAccHere > balAcc(i));
+    pValPermTest(i) = mean(nullAccHere > balAcc(i));
     pValZ(i) = 1 - normcdf(balAcc(i),mean(nullAccHere),std(nullAccHere));
     nullAcc{i} = nullAccHere;
 
-    fprintf(1,'Region %s-%s (%u/%u), balanced Acc = %.1f%%, p ~= %.1g\n',regionName{i},whatHemisphere(i),i,numRegions,balAcc(i),pValZ(i));
+    fprintf(1,'Region %s-%s (%u/%u), balanced Acc = %.1f%%, p_perm = %.1g, p_z ~= %.1g\n',...
+        regionName{i},whatHemisphere(i),i,numRegions,balAcc(i),pValPermTest(i),pValZ(i));
 end
+
+%-------------------------------------------------------------------------------
+% Export data to csv:
+dataFileOut = 'crossPredictionAccuracyP.csv';
+fid = fopen(dataFileOut,'w');
+fprintf(fid,'RegionName,\tregionHemisphere,\tbalancedAccuracy(%),\tpPerm,\tpZ\n')
+for i = 1:numRegions
+    fprintf(fid,'%s,\t%s,\t%g,\t%g,\t%g\n',regionName{i},whatHemisphere(i),balAcc(i),pValPermTest(i),pValZ(i));
+end
+fclose(fid);
 
 %-------------------------------------------------------------------------------
 nullStatPooled = vertcat(nullAcc{:});
@@ -70,6 +82,7 @@ balAccLeftSorted = balAccLeft(ib);
 pValZLeftSorted = pValZLeft(ib);
 
 balAccBoth = (balAccRightSorted+balAccLeftSorted)/2;
+pValZMean = (pValZRightSorted+pValZLeftSorted)/2;
 
 [~,ix] = sort(balAccBoth,'ascend');
 balAccRightSorted_ix = balAccRightSorted(ix);
@@ -93,3 +106,25 @@ ax.XTickLabel = uniqueRegions(ix);
 ax.XTickLabelRotation = 45;
 legend([hl,hr],{'left','right'},'Location','northwest')
 ylabel('Balanced Accuracy (%)')
+
+
+cellDensities = ImportCellDensities();
+% match on region acronym:
+[~,ia,ib] = intersect(uniqueRegions,cellDensities.acronym,'stable');
+f = figure('color','w'); hold('on')
+accRight = balAccRightSorted(ia);
+PVmeanDensity = cellDensities.PV_mean(ib);
+isSig = (pValZRightSorted < 0.01);
+plot(accRight(~isSig),PVmeanDensity(~isSig),'.k');
+plot(accRight(isSig),PVmeanDensity(isSig),'ok');
+for i = 1:23
+    if isSig(i)
+        text(accRight(i),PVmeanDensity(i),uniqueRegions{i},'Color','k');
+    else
+        text(accRight(i),PVmeanDensity(i),uniqueRegions{i},'Color',[0.5,0.5,0.5]);
+    end
+end
+[rho,p] = corr(accRight,PVmeanDensity,'type','Spearman');
+xlabel('balAcc (%)')
+ylabel('PV cell density')
+title(sprintf('rho = %.3f, p = %.1g',rho,p))
