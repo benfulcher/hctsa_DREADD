@@ -1,5 +1,5 @@
 
-numNullsPerRegion = 5e6;
+numNullsPerRegion = 10;
 
 %-------------------------------------------------------------------------------
 % Get trained model from PVCre-SHAM
@@ -116,12 +116,29 @@ legend([hl,hr],{'left','right'},'Location','northwest')
 ylabel('Balanced Accuracy (%)')
 
 
+%-------------------------------------------------------------------------------
+% PV CELL DENSITY??
+%-------------------------------------------------------------------------------
 cellDensities = ImportCellDensities();
 % match on region acronym:
-[~,ia,ib] = intersect(uniqueRegions,cellDensities.acronym,'stable');
-f = figure('color','w'); hold('on')
+[regionsMatch,ia,ib] = intersect(uniqueRegions,cellDensities.acronym,'stable');
 accRight = balAccRightSorted(ia);
 PVmeanDensity = cellDensities.PV_mean(ib);
+
+%-------------------------------------------------------------------------------
+% Export data to csv:
+dataFileOut = 'PV_density.csv';
+fid = fopen(dataFileOut,'w');
+fprintf(fid,'regionName,\tregionHemisphere,\tbalancedAccuracy(%%),\tPV_CellDensity\n');
+for i = 1:length(regionsMatch)
+    fprintf(fid,'%s,\t%s,\t%g,\t%g\n',regionsMatch{i},'right',accRight(i),PVmeanDensity(i));
+end
+fclose(fid);
+
+%-------------------------------------------------------------------------------
+% Plot
+
+f = figure('color','w'); hold('on')
 isSig = (pValZRightSorted < 0.01);
 plot(accRight(~isSig),PVmeanDensity(~isSig),'.k');
 plot(accRight(isSig),PVmeanDensity(isSig),'ok');
