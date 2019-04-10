@@ -44,7 +44,7 @@ case 'Excitatory_PVCre_Wild_SHAM'
 end
 
 %-------------------------------------------------------------------------------
-% Write it out to file:
+% Write it out to file (for python plots):
 fileName = 'hctsa_timeseries-customGroup.csv';
 fid = fopen(fileName,'w');
 for i = 1:height(nD.TimeSeries)

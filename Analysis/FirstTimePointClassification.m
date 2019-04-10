@@ -16,6 +16,7 @@ end
 
 %-------------------------------------------------------------------------------
 regionLabels = {'right','left','control'};
+regionLabelsNice = {'right SSctx','left SSctx','VIS ctx'};
 numRegions = length(regionLabels);
 
 % Cross-validation machine learning parameters:
@@ -77,8 +78,8 @@ plot(1:3,meanAcc(:,2),'--','color',ones(1,3)*0.5)
 plot(1:3,meanAcc(:,2)+stdAcc(:,2),':','color',ones(1,3)*0.5)
 plot(1:3,meanAcc(:,2)-stdAcc(:,2),':','color',ones(1,3)*0.5)
 ax.XTick = 1:numRegions;
-ax.XTickLabel = regionLabels;
-ylabel('Balanced classification accuracy (%)');
+ax.XTickLabel = regionLabelsNice;
+ylabel('Balanced accuracy (%)');
 xlabel('Brain region');
 xlim([0.9,3.1])
 title(sprintf('%s: %u-fold, %u repeats, %u nulls',whatAnalysis,numFolds,numRepeats,numNulls),...
