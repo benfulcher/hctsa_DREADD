@@ -79,15 +79,28 @@ This uses 100 nulls (for speed) to compute the difference between excitatory and
 FirstTimePointClassification('Excitatory_SHAM','all','ts2-BL',100)
 ```
 
+Running at Delta.2:
+```matlab
+FirstTimePointClassification('Excitatory_SHAM','all','ts3-BL',1000)
+```
+
 ### Which features are discriminatory
+
+#### Individual time point:
 
 E.g., characterize specific excitatory-sham differences in the injected region at Delta.1, using all features:
 ```matlab
 DiscriminativeFeatures('Excitatory_SHAM','right','all','ts2-BL')
 ```
 
-This code assumes each measured time point is independent and looks for features that show consistent differences to SHAM across time.
-Note that this assumption turns out to be very bad, so p-values obtained from this method are overly optimistic:
+And for PVCre versus control:
+```matlab
+DiscriminativeFeatures('PVCre_SHAM','right','all','ts2-BL')
+```
+
+#### Across multiple time points:
+This can be analyzed using `ConsensusFeatures`, which assumes that each measured time point is independent and looks for features that show consistent differences to SHAM across time.
+This assumption turns out to be very bad, so p-values obtained from this method are overly optimistic:
 
 ```matlab
 ConsensusFeatures('Excitatory_SHAM','right','all')
@@ -112,6 +125,7 @@ pValCompare
 Can feature scores be measured relative to those in a control region to look for additional correlations in specific brain regions?
 ```matlab
 testStatRelativeControl('right','all')
+testStatBar('all',false)
 ```
 
 ### Plotting differences

@@ -11,7 +11,7 @@ whatAnalysis = 'Excitatory_PVCre_SHAM';
 numFeatures = 80; % number of features to include in the pairwise correlation plot
 numFeaturesDistr = 16*3; % number of features to show class distributions for
 numNulls = 0;
-whatFeatures = 'reduced'; %'all','reduced'
+whatFeatures = 'all'; %'all','reduced'
 whatStatistic = 'ustat'; % fast linear classification rate statistic
 %===============================================================================
 rightOrLeft = {'right'}; % {'right','left','control'};

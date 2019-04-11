@@ -40,6 +40,10 @@ testStatMat = horzcat([testStat{:}]);
 [rLeft,pLeft] = corr(testStatMat(:,3),testStatMat(:,4),'rows','pairwise','type','Spearman');
 [rControl,pControl] = corr(testStatMat(:,5),testStatMat(:,6),'rows','pairwise','type','Spearman');
 
+fprintf(1,'rRight = %.3f\n',rRight);
+fprintf(1,'rLeft = %.3f\n',rLeft);
+fprintf(1,'rControl = %.3f\n',rControl);
+
 % Plot as bar:
 f = figure('color','w');
 ax = gca();
